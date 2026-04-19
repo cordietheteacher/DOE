@@ -6,639 +6,1160 @@
   <title>Coverage Manager - Cloud Edition</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{--primary:#243447;--accent:#2d89ef;--success:#2e8b57;--warning:#f39c12;--danger:#c0392b;--bg:#f4f7f9;--card:#fff;--border:#d7dde5;--muted:#6b7280}
-    *{box-sizing:border-box}body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);margin:0;padding:20px;color:#1f2937}
-    .wrap{max-width:1440px;margin:auto;background:#fff;border-radius:14px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-    h1,h2,h3,h4{margin-top:0}.subtle{color:var(--muted);font-size:13px}.hidden{display:none!important}
-    .row{display:flex;gap:12px;flex-wrap:wrap}.grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}.metric{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fbfdff}.metric .label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase}.metric .value{font-size:28px;font-weight:800;margin-top:6px}
-    input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:white}textarea{min-height:70px}
-    button{padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:700}.btn-main{background:var(--accent);color:#fff}.btn-success{background:var(--success);color:#fff}.btn-warning{background:var(--warning);color:#fff}.btn-danger{background:var(--danger);color:#fff}.btn-light{background:#eef3f7;color:#243447;border:1px solid var(--border)}.btn-mini{padding:6px 9px;font-size:12px}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.teacher-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;max-height:310px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px;background:#fafcff}
-    .teacher-check{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #edf2f7;border-radius:8px;background:#fff;font-size:12px}.teacher-check.conflict{background:#fff0f0;border-color:#f4b4b4}
-    .pill{display:inline-block;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:700}.pill-dept{background:#edf2ff;color:#3730a3}.pill-danger{background:#fde8e8;color:#9b1c1c}.pill-success{background:#def7ec;color:#065f46}.pill-gray{background:#eef2f7;color:#475569}.pill-purple{background:#ede9fe;color:#5b21b6}
-    table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff}th,td{border:1px solid #dce3ea;padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--primary);color:#fff}tr.unfilled{background:#fff0f0}tr.locked-row{background:#f5f3ff}
-    .alert{padding:12px;border-radius:10px;font-weight:700}.alert-danger{background:#fdecea;color:#9b1c1c;border:1px solid #f5c2c7}.alert-success{background:#e9f7ef;color:#1e6a3d;border:1px solid #b7e1c4}.alert-warning{background:#fff3cd;color:#7a5b00;border:1px solid #ffe69c}
-    .period-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}.period-title{background:#eef3f8;padding:10px 12px;font-weight:800}.notice-box{border:1px dashed #94a3b8;border-radius:10px;padding:12px;margin-bottom:10px;background:#fcfdff}
-    .nav{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.nav button.active{background:var(--primary);color:#fff}
-    .banner{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;padding-bottom:14px;border-bottom:3px solid var(--primary);margin-bottom:18px}
-    .right-meta{display:flex;gap:12px;flex-wrap:wrap}.small{font-size:12px}
-    @media (max-width:1000px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
-    @media print {.no-print{display:none!important} body{padding:0;background:#fff}.wrap{box-shadow:none;border:none;max-width:none;padding:0}}
+    :root {
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #dc2626;
+      --success: #059669;
+      --warning-bg: #fef3c7;
+      --warning-text: #92400e;
+      --border: #d1d5db;
+      --shadow: 0 10px 25px rgba(0,0,0,0.08);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1500px;
+      margin: 32px auto;
+      padding: 0 20px 40px;
+    }
+
+    .shell {
+      background: #e5e7eb;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      font-size: 58px;
+      line-height: 1.05;
+      margin: 0 0 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .top-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.18s ease;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+    .btn-secondary:hover { background: #d1d5db; }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+
+    .status.warning {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .divider {
+      height: 4px;
+      background: #374151;
+      border-radius: 4px;
+      margin: 20px 0 22px;
+    }
+
+    .auth-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .hidden { display: none !important; }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .section-title h3 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f9fafb;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+    }
+
+    tr.no-sub {
+      background: #fef2f2;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kpi {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .kpi .label {
+      font-size: 12px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .kpi .value {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .stack > * + * { margin-top: 12px; }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .small {
+      font-size: 13px;
+    }
+
+    .note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .danger-note {
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: #374151;
+    }
+
+    .list li { margin-bottom: 6px; }
+
+    @media (max-width: 1100px) {
+      .top-grid, .app-grid, .two-col, .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 { font-size: 40px; }
+    }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="banner">
-    <div>
+  <div class="wrap">
+    <div class="shell">
       <h1>Coverage Manager - Cloud Edition</h1>
-      <div class="subtle">Hosted-ready version for GitHub Pages + Supabase with audit log, finalization, cloud storage, CSV export, and printable finalized records.</div>
-    </div>
-    <div class="right-meta no-print">
-      <div class="card" style="min-width:250px;">
-        <div><b>Supabase URL</b></div>
-        <input id="supabaseUrl" placeholder="https://YOURPROJECT.supabase.co">
-        <div style="margin-top:8px"><b>Supabase anon key</b></div>
-        <input id="supabaseKey" placeholder="Paste anon public key">
-        <div class="toolbar" style="margin-top:8px">
-          <button class="btn-light btn-mini" onclick="saveConfig()">Save Config</button>
-        </div>
-      </div>
-      <div class="card" style="min-width:270px;">
-        <div id="authBoxLoggedOut">
-          <div><b>Sign in</b></div>
-          <input id="email" placeholder="Email">
-          <input id="password" type="password" placeholder="Password" style="margin-top:8px;">
-          <div class="toolbar" style="margin-top:8px">
-            <button class="btn-main btn-mini" onclick="signIn()">Sign In</button>
-            <button class="btn-light btn-mini" onclick="signUp()">Create Account</button>
-          </div>
-          <div class="small subtle" style="margin-top:8px">Create the first account from the app only if email/password signups are enabled in Supabase.</div>
-        </div>
-        <div id="authBoxLoggedIn" class="hidden">
-          <div><b>Signed in as</b></div>
-          <div id="userEmail" style="font-weight:700;margin-top:6px"></div>
-          <div id="userRole" class="pill pill-purple" style="margin-top:8px">role</div>
-          <div class="toolbar" style="margin-top:10px">
-            <button class="btn-light btn-mini" onclick="signOutUser()">Sign Out</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+      <div class="subtitle">Hosted-ready version for GitHub Pages + Supabase with audit log, finalization, cloud storage, CSV export, and printable finalized records.</div>
 
-  <div id="notReadyAlert" class="alert alert-warning no-print">Enter your Supabase URL and anon key, save them, then sign in.</div>
-
-  <div id="appShell" class="hidden">
-    <div class="nav no-print">
-      <button class="btn-light active" id="nav-daily" onclick="switchTab('daily')">Daily</button>
-      <button class="btn-light" id="nav-dashboard" onclick="switchTab('dashboard')">Day-of Dashboard</button>
-      <button class="btn-light" id="nav-payroll" onclick="switchTab('payroll')">Payroll & Fairness</button>
-      <button class="btn-light" id="nav-audit" onclick="switchTab('audit')">Audit Log</button>
-    </div>
-
-    <div id="topMeta" class="row no-print" style="margin-bottom:14px;">
-      <div class="card" style="min-width:230px;">
-        <label><b>Date</b></label>
-        <input type="date" id="selectedDate" onchange="loadSelectedDate()">
-      </div>
-      <div class="card" style="min-width:230px;">
-        <div><b>Status</b></div>
-        <div id="dayStatus" style="font-weight:800;margin-top:8px">Draft</div>
-      </div>
-      <div class="card" style="min-width:230px;">
-        <div><b>Payroll Period</b></div>
-        <div id="payPeriodLabel" style="font-weight:800;margin-top:8px">—</div>
-      </div>
-    </div>
-
-    <div id="dailyTab">
-      <div class="grid-2 no-print">
+      <div class="top-grid">
         <div class="card">
-          <h3>Absences & Exemptions</h3>
-          <div class="grid-3" style="margin-bottom:10px;">
-            <div>
-              <label><b>Search staff</b></label>
-              <input id="staffSearch" placeholder="Search by name" oninput="renderTeacherGrids()">
-            </div>
-            <div>
-              <label><b>Department</b></label>
-              <select id="departmentFilter" onchange="setDepartmentFilter(this.value)"></select>
-            </div>
-            <div>
-              <label><b>Quick actions</b></label>
+          <h2>Supabase Setup</h2>
+          <label for="supabaseUrl">Supabase URL</label>
+          <input id="supabaseUrl" placeholder="https://your-project.supabase.co" />
+
+          <label for="supabaseKey">Supabase publishable key</label>
+          <input id="supabaseKey" placeholder="sb_publishable_..." />
+
+          <button class="btn-secondary" onclick="saveConfig()">Save Config</button>
+          <div class="muted small">Use your project URL and publishable key from Supabase.</div>
+        </div>
+
+        <div class="card">
+          <h2>Sign in</h2>
+          <input id="authEmail" type="email" placeholder="Email address" />
+          <input id="authPassword" type="password" placeholder="Password" />
+          <div class="auth-row">
+            <button class="btn-primary" onclick="signIn()">Sign In</button>
+            <button class="btn-secondary" onclick="signUp()">Create Account</button>
+            <button class="btn-secondary hidden" id="signOutBtn" onclick="signOut()">Sign Out</button>
+          </div>
+          <div class="muted">Create the first account from the app only if email/password signups are enabled in Supabase.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div id="statusBox" class="status warning">Enter your Supabase URL and publishable key, save them, then sign in.</div>
+
+      <div id="app" class="hidden">
+        <div class="app-grid">
+          <div class="stack">
+            <div class="card">
+              <div class="section-title">
+                <h3>Plan Setup</h3>
+                <span class="pill" id="userPill">Not signed in</span>
+              </div>
+
+              <label for="planDate">Coverage date</label>
+              <input id="planDate" type="date" />
+
+              <label for="generatedBy">Generated by</label>
+              <input id="generatedBy" placeholder="Principal Blair" />
+
+              <label for="schoolName">School</label>
+              <input id="schoolName" placeholder="WHSAT" />
+
+              <label for="absentTeachersInput">Absent teachers (one per line)</label>
+              <textarea id="absentTeachersInput" placeholder="Ms. Smith&#10;Mr. Lee"></textarea>
+
+              <label for="teacherPoolInput">Coverage pool (CSV: name, department, available periods, exempt)</label>
+              <textarea id="teacherPoolInput" placeholder="Ms. Alvarez,Math,1|3|6,no&#10;Mr. Brown,ELA,2|5,yes"></textarea>
+
+              <label for="officeNotes">Office notes</label>
+              <textarea id="officeNotes" placeholder="Notes for AP, payroll secretary, or main office."></textarea>
+
               <div class="toolbar">
-                <button class="btn-light btn-mini" onclick="clearList('absences')">Clear absences</button>
-                <button class="btn-light btn-mini" onclick="clearList('exemptions')">Clear exemptions</button>
-                <button class="btn-light btn-mini" onclick="selectDeptAbsences()">Select dept absences</button>
+                <button class="btn-primary" onclick="generatePlan()">Generate Plan</button>
+                <button class="btn-secondary" onclick="loadLatestPlan()">Load Latest</button>
+                <button class="btn-success" onclick="finalizePlan()">Finalize Plan</button>
+              </div>
+
+              <div class="note">Finalized plans are locked from assignment edits and are intended to serve as the payroll/records version.</div>
+            </div>
+
+            <div class="card">
+              <div class="section-title">
+                <h3>Manual Actions</h3>
+              </div>
+              <label for="manualAbsent">Absent teacher</label>
+              <input id="manualAbsent" placeholder="Ms. Smith" />
+
+              <label for="manualPeriod">Period</label>
+              <input id="manualPeriod" placeholder="3" />
+
+              <label for="manualAssigned">Assigned coverage</label>
+              <input id="manualAssigned" placeholder="Mr. Brown" />
+
+              <label for="manualType">Coverage type</label>
+              <select id="manualType">
+                <option value="coverage">coverage</option>
+                <option value="same_department">same_department</option>
+                <option value="pod_or_prep">pod_or_prep</option>
+                <option value="admin_or_counselor">admin_or_counselor</option>
+                <option value="merge_or_relocation">merge_or_relocation</option>
+                <option value="no_sub">no_sub</option>
+              </select>
+
+              <label for="manualNote">Assignment note</label>
+              <textarea id="manualNote" placeholder="Reason, lock note, or escalation note."></textarea>
+
+              <div class="toolbar">
+                <button class="btn-secondary" onclick="addManualAssignment()">Add Manual Assignment</button>
+                <button class="btn-secondary" onclick="lockSelectedPlan()">Lock Current Draft</button>
               </div>
             </div>
           </div>
-          <div class="grid-2">
-            <div>
-              <div style="font-weight:800;margin-bottom:6px">Absent staff</div>
-              <div id="absentGrid" class="teacher-grid"></div>
+
+          <div class="stack">
+            <div class="kpi-grid">
+              <div class="kpi">
+                <div class="label">Total Assignments</div>
+                <div class="value" id="kpiAssignments">0</div>
+              </div>
+              <div class="kpi">
+                <div class="label">Unresolved NO SUB</div>
+                <div class="value" id="kpiNoSub">0</div>
+              </div>
+              <div class="kpi">
+                <div class="label">Finalized Plans</div>
+                <div class="value" id="kpiFinalized">0</div>
+              </div>
+              <div class="kpi">
+                <div class="label">Audit Entries</div>
+                <div class="value" id="kpiAudit">0</div>
+              </div>
             </div>
-            <div>
-              <div style="font-weight:800;margin-bottom:6px">Exempt staff</div>
-              <div id="exemptGrid" class="teacher-grid"></div>
+
+            <div class="card">
+              <div class="section-title">
+                <h3>Principal Dashboard</h3>
+                <div class="toolbar" style="margin:0;">
+                  <button class="btn-secondary" onclick="printPlan()">Print</button>
+                  <button class="btn-secondary" onclick="exportAssignmentsCsv()">Export Assignments CSV</button>
+                  <button class="btn-secondary" onclick="exportAuditCsv()">Export Audit CSV</button>
+                </div>
+              </div>
+              <div id="dashboardAlerts" class="danger-note">No plan loaded.</div>
+            </div>
+
+            <div class="card">
+              <div class="section-title">
+                <h3>Assignments</h3>
+              </div>
+              <div id="assignmentsWrap" class="muted">No assignments yet.</div>
+            </div>
+
+            <div class="two-col">
+              <div class="card">
+                <div class="section-title">
+                  <h3>Payroll Summary</h3>
+                </div>
+                <div id="payrollWrap" class="muted">No payroll summary yet.</div>
+              </div>
+
+              <div class="card">
+                <div class="section-title">
+                  <h3>Fairness Snapshot</h3>
+                </div>
+                <div id="fairnessWrap" class="muted">No fairness data yet.</div>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="card">
+                <div class="section-title">
+                  <h3>Audit Log</h3>
+                </div>
+                <div id="auditWrap" class="muted">No audit entries yet.</div>
+              </div>
+
+              <div class="card">
+                <div class="section-title">
+                  <h3>Teacher Notice View</h3>
+                </div>
+                <div id="noticeWrap" class="muted">No teacher notices yet.</div>
+              </div>
             </div>
           </div>
-          <div class="toolbar" style="margin-top:12px">
-            <button class="btn-main" onclick="generateAssignments()">Generate / Add Missing Assignments</button>
-            <button class="btn-light" onclick="saveDayMetaOnly()">Save Lists</button>
-            <button class="btn-success" onclick="finalizeDay()">Finalize Day</button>
-            <button class="btn-warning" onclick="reopenDay()">Reopen Day</button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Office Memo</h3>
-          <textarea id="dayMemo" placeholder="Daily office directions, AP notes, relocation instructions, payroll notes..."></textarea>
-          <div class="toolbar" style="margin-top:10px">
-            <button class="btn-light" onclick="saveDayMetaOnly()">Save Memo</button>
-            <button class="btn-light" onclick="insertSampleMemo()">Insert sample memo</button>
-            <button class="btn-light" onclick="window.print()">Print</button>
-            <button class="btn-light" onclick="exportDayCSV()">Export CSV</button>
-          </div>
-          <div class="small subtle" style="margin-top:10px">Once finalized, the day becomes read-only unless reopened by an authorized user.</div>
         </div>
       </div>
-      <div id="dailyReport"></div>
     </div>
-
-    <div id="dashboardTab" class="hidden"></div>
-    <div id="payrollTab" class="hidden"></div>
-    <div id="auditTab" class="hidden"></div>
   </div>
-</div>
 
-<script>
-const teachers = [
-  { name:"STEWART", department:"SCI", role:"Teacher", p1:"252", p2:"252", p3:"POD SCI", p5:"PREP", p6:"252", p7:"252" },
-  { name:"MEDINA", department:"SCI", role:"Teacher", p1:"252", p2:"252", p3:"POD SCI", p5:"PREP", p6:"252", p7:"252" },
-  { name:"BEVERETT", department:"SCI", role:"Teacher", p1:"249", p2:"249", p3:"POD SCI", p5:"PREP", p6:"249", p7:"249" },
-  { name:"DURAN", department:"SCI", role:"Teacher", p1:"276", p2:"PREP", p3:"276", p5:"249", p6:"POD SCI", p7:"239" },
-  { name:"GATICA", department:"SCI", role:"Teacher", p1:"276", p2:"PREP", p3:"276", p5:"276", p6:"POD SCI", p7:"276" },
-  { name:"RODRIGUEZ", department:"SCI", role:"Teacher", p1:"274", p2:"PREP", p3:"249", p5:"276", p6:"POD SCI", p7:"239" },
-  { name:"BARBER", department:"ENL", role:"Teacher", p1:"215", p2:"205", p3:"PREP", p5:"PREP", p6:"231", p7:"223" },
-  { name:"GAYLE", department:"ELA", role:"Teacher", p1:"213", p2:"213", p3:"213", p5:"POD ELA", p6:"213", p7:"PREP" },
-  { name:"OTTAVIANI", department:"ELA", role:"Teacher", p1:"PREP", p2:"223", p3:"223", p5:"POD ELA", p6:"223", p7:"223" },
-  { name:"POPE", department:"ELA", role:"Teacher", p1:"215", p2:"215", p3:"POD ELA", p5:"215", p6:"PREP", p7:"215" },
-  { name:"VAN NORT", department:"ELA", role:"Teacher", p1:"231", p2:"231", p3:"UFT", p5:"217", p6:"PREP", p7:"231" },
-  { name:"SAINTE", department:"HIST", role:"Teacher", p1:"POD HIST", p2:"241", p3:"231", p5:"213", p6:"204", p7:"PREP" },
-  { name:"SNIFFEN", department:"HIST", role:"Teacher", p1:"POD HIST", p2:"274", p3:"204", p5:"PREP", p6:"274", p7:"274" },
-  { name:"SIBRIAN", department:"HIST", role:"Teacher", p1:"POD HIST", p2:"274", p3:"PREP", p5:"213", p6:"274", p7:"274" },
-  { name:"FRANKLIN", department:"HIST", role:"Teacher", p1:"PREP", p2:"POD HIST", p3:"209", p5:"209", p6:"204", p7:"209" },
-  { name:"BALDE", department:"HIST", role:"Teacher", p1:"PREP", p2:"POD HIST", p3:"204", p5:"209", p6:"PREP", p7:"209" },
-  { name:"SODERHOLM", department:"HIST", role:"Teacher", p1:"204", p2:"POD HIST", p3:"204", p5:"274", p6:"PREP", p7:"204" },
-  { name:"KURAS", department:"MATH", role:"Teacher", p1:"PREP", p2:"POD MATH", p3:"206", p5:"206", p6:"206", p7:"206" },
-  { name:"NWOKE", department:"MATH", role:"Teacher", p1:"PREP", p2:"POD MATH", p3:"205", p5:"205", p6:"205", p7:"205" },
-  { name:"POLANCO", department:"MATH", role:"Teacher", p1:"PREP", p2:"POD MATH", p3:"205", p5:"205", p6:"205", p7:"205" },
-  { name:"LIN", department:"MATH", role:"Teacher", p1:"241", p2:"PREP", p3:"POD MATH", p5:"241", p6:"241", p7:"241" },
-  { name:"SHENE", department:"MATH", role:"Teacher", p1:"241", p2:"PREP", p3:"POD MATH", p5:"241", p6:"241", p7:"241" },
-  { name:"TUCKER", department:"MATH", role:"Teacher", p1:"239", p2:"239", p3:"POD MATH", p5:"239", p6:"239", p7:"PREP" }
-];
-const adminCoveragePool = [
-  { name:"COUNSELOR FLOAT", department:"SUPPORT", role:"Counselor" },
-  { name:"DEAN FLOAT", department:"SUPPORT", role:"Dean" },
-  { name:"AP COVERAGE", department:"ADMIN", role:"AP" },
-  { name:"PRINCIPAL COVERAGE", department:"ADMIN", role:"Principal" }
-];
-const pNames = { p1:'P1', p2:'P2', p3:'P3', p5:'P5', p6:'P6', p7:'P7' };
-const periods = ['P1','P2','P3','P5','P6','P7'];
-let currentDepartmentFilter = 'ALL';
-let supabase = null;
-let currentUser = null;
-let currentProfile = null;
-let currentDay = { id:null, coverage_date:null, status:'draft', office_memo:'', created_by:null, updated_by:null, absences:[], exemptions:[], assignments:[] };
+  <script>
+    let supabaseClient = null;
+    let currentUser = null;
+    let currentPlan = null;
+    let currentAssignments = [];
+    let currentAudit = [];
+    let currentPlansList = [];
 
-function saveConfig(){
-  localStorage.setItem('coverageSupabaseUrl', document.getElementById('supabaseUrl').value.trim());
-  localStorage.setItem('coverageSupabaseKey', document.getElementById('supabaseKey').value.trim());
-  initSupabase();
-}
-function loadConfig(){
-  document.getElementById('supabaseUrl').value = localStorage.getItem('coverageSupabaseUrl') || '';
-  document.getElementById('supabaseKey').value = localStorage.getItem('coverageSupabaseKey') || '';
-}
-function initSupabase(){
-  const url = document.getElementById('supabaseUrl').value.trim();
-  const key = document.getElementById('supabaseKey').value.trim();
-  if(!url || !key){
-    document.getElementById('notReadyAlert').classList.remove('hidden');
-    return;
-  }
-  supabase = window.supabase.createClient(url, key);
-  document.getElementById('notReadyAlert').classList.add('hidden');
-  checkSession();
-}
-async function checkSession(){
-  const { data } = await supabase.auth.getSession();
-  if(data.session){
-    currentUser = data.session.user;
-    await loadProfile();
-    showApp();
-  }
-}
-async function signUp(){
-  if(!supabase) return alert('Save Supabase config first.');
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const { error } = await supabase.auth.signUp({ email, password });
-  if(error) return alert(error.message);
-  alert('Account created. If confirmation is required, confirm email first.');
-}
-async function signIn(){
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if(error) return alert(error.message);
-  const { data } = await supabase.auth.getSession();
-  currentUser = data.session.user;
-  await loadProfile();
-  showApp();
-}
-async function signOutUser(){ await supabase.auth.signOut(); location.reload(); }
-async function loadProfile(){
-  let { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-  if(!data){
-    const inferredName = currentUser.email.split('@')[0].replace(/[._-]/g,' ');
-    const payload = { id: currentUser.id, email: currentUser.email, full_name: inferredName, role: 'principal' };
-    await supabase.from('profiles').insert(payload);
-    const res = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-    data = res.data;
-  }
-  currentProfile = data;
-}
-function showApp(){
-  document.getElementById('appShell').classList.remove('hidden');
-  document.getElementById('authBoxLoggedOut').classList.add('hidden');
-  document.getElementById('authBoxLoggedIn').classList.remove('hidden');
-  document.getElementById('userEmail').textContent = currentUser.email;
-  document.getElementById('userRole').textContent = currentProfile?.role || 'user';
-  document.getElementById('selectedDate').valueAsDate = new Date();
-  initFilters();
-  loadSelectedDate();
-}
-function initFilters(){
-  const dept = ['ALL', ...new Set(teachers.map(t => t.department).sort())];
-  document.getElementById('departmentFilter').innerHTML = dept.map(d => `<option value="${d}">${d === 'ALL' ? 'All Departments' : d}</option>`).join('');
-}
-function setDepartmentFilter(val){ currentDepartmentFilter = val; renderTeacherGrids(); }
-function getPayPeriodLabel(dateStr){ const d=new Date(dateStr+'T12:00:00'); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')} ${d.getDate()<=15?'PP1 (1-15)':'PP2 (16-EOM)'}`; }
-function getMonthLabel(dateStr){ return new Date(dateStr+'T12:00:00').toLocaleDateString(undefined,{month:'long',year:'numeric'}); }
-function getTeacher(name){ return teachers.find(t=>t.name===name) || adminCoveragePool.find(t=>t.name===name) || null; }
-function isCoverableClass(t,p){ const slot=t[p]; return slot && !slot.includes('PREP') && !slot.includes('POD') && slot !== 'UFT'; }
-function getPeriodKey(label){ return Object.keys(pNames).find(k => pNames[k]===label); }
-function escapeHtml(v){ return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-function selectedDate(){ return document.getElementById('selectedDate').value; }
-function isReadOnly(){ return currentDay.status === 'finalized'; }
+    function setStatus(message, type = 'warning') {
+      const box = document.getElementById('statusBox');
+      box.className = `status ${type}`;
+      box.textContent = message;
+    }
 
-async function loadSelectedDate(){
-  const date = selectedDate();
-  document.getElementById('payPeriodLabel').textContent = getPayPeriodLabel(date);
-  const { data:day, error } = await supabase.from('coverage_days').select('*').eq('coverage_date', date).maybeSingle();
-  if(error) return alert(error.message);
-  if(!day){
-    currentDay = { id:null, coverage_date:date, status:'draft', office_memo:'', absences:[], exemptions:[], assignments:[] };
-  } else {
-    currentDay = day;
-    const { data:lists } = await supabase.from('coverage_day_lists').select('*').eq('coverage_day_id', day.id);
-    currentDay.absences = lists?.filter(x=>x.list_type==='absence').map(x=>x.teacher_name) || [];
-    currentDay.exemptions = lists?.filter(x=>x.list_type==='exemption').map(x=>x.teacher_name) || [];
-    const { data:assignments } = await supabase.from('coverage_assignments').select('*').eq('coverage_day_id', day.id).order('period', { ascending:true });
-    currentDay.assignments = assignments || [];
-  }
-  document.getElementById('dayStatus').textContent = currentDay.status === 'finalized' ? 'Finalized' : 'Draft';
-  document.getElementById('dayMemo').value = currentDay.office_memo || '';
-  renderTeacherGrids();
-  renderDaily();
-  renderDashboard();
-  renderPayroll();
-  renderAudit();
-}
+    function getConfig() {
+      return {
+        url: localStorage.getItem('coverage_supabase_url') || '',
+        key: localStorage.getItem('coverage_supabase_key') || ''
+      };
+    }
 
-function renderTeacherGrids(){
-  const q = (document.getElementById('staffSearch').value || '').toLowerCase().trim();
-  const pool = teachers.filter(t => (currentDepartmentFilter==='ALL' || t.department===currentDepartmentFilter) && (!q || t.name.toLowerCase().includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
-  document.getElementById('absentGrid').innerHTML = pool.map(t => {
-    const conflict = currentDay.exemptions.includes(t.name);
-    return `<label class="teacher-check ${conflict?'conflict':''}"><input type="checkbox" ${currentDay.absences.includes(t.name)?'checked':''} onchange="toggleListItem('absences','${t.name.replace(/'/g,"\\'")}')"> <span>${t.name}</span> <span class="pill pill-dept">${t.department}</span> ${conflict?'<span class="pill pill-danger">Conflict</span>':''}</label>`;
-  }).join('');
-  document.getElementById('exemptGrid').innerHTML = pool.map(t => {
-    const conflict = currentDay.absences.includes(t.name);
-    return `<label class="teacher-check ${conflict?'conflict':''}"><input type="checkbox" ${currentDay.exemptions.includes(t.name)?'checked':''} onchange="toggleListItem('exemptions','${t.name.replace(/'/g,"\\'")}')"> <span>${t.name}</span> <span class="pill pill-dept">${t.department}</span> <span class="pill pill-gray">Exempt</span> ${conflict?'<span class="pill pill-danger">Conflict</span>':''}</label>`;
-  }).join('');
-}
-function toggleListItem(type, name){
-  if(isReadOnly()) return alert('This day is finalized and read-only. Reopen it first.');
-  const arr = currentDay[type];
-  if(arr.includes(name)) currentDay[type] = arr.filter(x=>x!==name); else currentDay[type] = [...arr, name];
-  renderTeacherGrids();
-}
-function clearList(type){ if(isReadOnly()) return alert('This day is finalized.'); currentDay[type] = []; renderTeacherGrids(); }
-function selectDeptAbsences(){ if(isReadOnly()) return alert('This day is finalized.'); if(currentDepartmentFilter==='ALL') return; currentDay.absences = [...new Set([...currentDay.absences, ...teachers.filter(t=>t.department===currentDepartmentFilter).map(t=>t.name)])]; renderTeacherGrids(); }
-function insertSampleMemo(){ document.getElementById('dayMemo').value = `Main office: call assigned staff before the start of the period.\nDean team: monitor hallway transitions for relocated classes.\nAP team: resolve all NO SUB incidents before students arrive.\nPayroll: review manual and admin-assigned coverages before final export.`; }
+    function setConfig(url, key) {
+      localStorage.setItem('coverage_supabase_url', url);
+      localStorage.setItem('coverage_supabase_key', key);
+    }
 
-async function ensureDayExists(){
-  if(currentDay.id) return currentDay.id;
-  const payload = { coverage_date:selectedDate(), status:'draft', office_memo:document.getElementById('dayMemo').value.trim(), created_by:currentUser.id, updated_by:currentUser.id };
-  const { data, error } = await supabase.from('coverage_days').insert(payload).select('*').single();
-  if(error) throw error;
-  currentDay = { ...currentDay, ...data };
-  await logAudit(null, 'create_day', null, payload);
-  return data.id;
-}
+    function fillSavedConfig() {
+      const { url, key } = getConfig();
+      document.getElementById('supabaseUrl').value = url;
+      document.getElementById('supabaseKey').value = key;
+    }
 
-async function saveLists(){
-  const dayId = await ensureDayExists();
-  await supabase.from('coverage_day_lists').delete().eq('coverage_day_id', dayId);
-  const rows = [
-    ...currentDay.absences.map(name => ({ coverage_day_id:dayId, list_type:'absence', teacher_name:name })),
-    ...currentDay.exemptions.map(name => ({ coverage_day_id:dayId, list_type:'exemption', teacher_name:name }))
-  ];
-  if(rows.length){ const { error } = await supabase.from('coverage_day_lists').insert(rows); if(error) throw error; }
-}
-async function saveDayMetaOnly(){
-  try{
-    const dayId = await ensureDayExists();
-    const office_memo = document.getElementById('dayMemo').value.trim();
-    const { error } = await supabase.from('coverage_days').update({ office_memo, updated_by:currentUser.id }).eq('id', dayId);
-    if(error) throw error;
-    currentDay.office_memo = office_memo;
-    await saveLists();
-    await logAudit(null, 'save_day_meta', null, { office_memo, absences:currentDay.absences, exemptions:currentDay.exemptions });
-    alert('Daily lists and memo saved.');
-    await loadSelectedDate();
-  }catch(e){ alert(e.message); }
-}
-function getEligiblePool(pKey, predicate){
-  return teachers.filter(obj => {
-    if(currentDay.absences.includes(obj.name) || currentDay.exemptions.includes(obj.name)) return false;
-    const slot = obj[pKey] || '';
-    if(!(slot.includes('PREP') || slot.includes('POD'))) return false;
-    const used = currentDay.assignments.some(a => a.period===pNames[pKey] && a.sub_assigned===obj.name);
-    if(used) return false;
-    return predicate(obj);
-  });
-}
-async function loadFairnessTotals(){
-  const { data } = await supabase.from('coverage_assignments').select('sub_assigned');
-  const counts = {};
-  (data || []).forEach(r => { if(r.sub_assigned && r.sub_assigned !== 'NO SUB') counts[r.sub_assigned] = (counts[r.sub_assigned]||0)+1; });
-  return counts;
-}
-function chooseFairestCandidate(pool, fairness, department, pKey){
-  return [...pool].sort((a,b) => {
-    const deptA = a.department===department ? 0 : 1, deptB = b.department===department ? 0 : 1;
-    if(deptA!==deptB) return deptA-deptB;
-    const podA = (a[pKey]||'').includes('POD') ? 0 : 1, podB = (b[pKey]||'').includes('POD') ? 0 : 1;
-    if(podA!==podB) return podA-podB;
-    return (fairness[a.name]||0) - (fairness[b.name]||0) || a.name.localeCompare(b.name);
-  })[0] || null;
-}
-async function generateAssignments(){
-  if(isReadOnly()) return alert('This day is finalized and cannot be edited.');
-  try{
-    const dayId = await ensureDayExists();
-    currentDay.office_memo = document.getElementById('dayMemo').value.trim();
-    await supabase.from('coverage_days').update({ office_memo:currentDay.office_memo, updated_by:currentUser.id }).eq('id', dayId);
-    await saveLists();
-    const fairness = await loadFairnessTotals();
-    const existing = new Set(currentDay.assignments.map(a => `${a.absent_teacher}|${a.period}`));
-    const inserts = [];
-    for(const pKey of ['p1','p2','p3','p5','p6','p7']){
-      for(const name of currentDay.absences){
-        const t = getTeacher(name);
-        if(!t || !isCoverableClass(t, pKey)) continue;
-        const rowKey = `${name}|${pNames[pKey]}`;
-        if(existing.has(rowKey)) continue;
-        let pool = getEligiblePool(pKey, obj => obj.department===t.department);
-        let chosen = chooseFairestCandidate(pool, fairness, t.department, pKey);
-        let subAssigned='NO SUB', coverageType='Emergency / Unresolved', escalationStage='4. Principal/AP intervention required', status='UNFILLED';
-        if(chosen){
-          subAssigned = chosen.name; coverageType='Same Department'; escalationStage='1. Same department teacher'; status='Filled';
-        } else {
-          pool = getEligiblePool(pKey, obj => true);
-          chosen = chooseFairestCandidate(pool, fairness, t.department, pKey);
-          if(chosen){
-            subAssigned = chosen.name; coverageType='Pod/Prep Coverage'; escalationStage='2. Pod/Prep staff'; status='Filled';
-          } else {
-            const adminUsed = currentDay.assignments.filter(a=>a.period===pNames[pKey]).map(a=>a.sub_assigned);
-            const adminPick = adminCoveragePool.find(p=>!adminUsed.includes(p.name));
-            if(adminPick){
-              subAssigned = adminPick.name; coverageType='Admin/Counselor Coverage'; escalationStage='3. Admin/counselor fallback'; status='Flag for AP/Principal';
-            }
-          }
-        }
-        inserts.push({
-          coverage_day_id:dayId,
-          period:pNames[pKey],
-          absent_teacher:name,
-          absent_department:t.department,
-          room:t[pKey],
-          sub_assigned:subAssigned,
-          substitute_department:getTeacher(subAssigned)?.department || null,
-          coverage_type:coverageType,
-          escalation_stage:escalationStage,
-          status,
-          office_notes: subAssigned==='NO SUB' ? 'Merge, relocate, or emergency coverage plan required.' : '',
-          locked:false,
-          created_by:currentUser.id,
-          updated_by:currentUser.id
-        });
-        existing.add(rowKey);
+    function initSupabase() {
+      const url = document.getElementById('supabaseUrl').value.trim();
+      const key = document.getElementById('supabaseKey').value.trim();
+
+      if (!url || !key) {
+        throw new Error('Missing Supabase URL or key.');
+      }
+
+      supabaseClient = window.supabase.createClient(url, key);
+      setConfig(url, key);
+      return true;
+    }
+
+    async function saveConfig() {
+      try {
+        initSupabase();
+        setStatus('Supabase config saved. You can now sign in or create an account.', 'success');
+      } catch (err) {
+        console.error(err);
+        setStatus(`Config error: ${err.message}`, 'error');
       }
     }
-    if(inserts.length){
-      const { data, error } = await supabase.from('coverage_assignments').insert(inserts).select('*');
-      if(error) throw error;
-      for(const row of data){ await logAudit(row.id, 'generate_assignment', null, row); }
+
+    async function signUp() {
+      try {
+        if (!supabaseClient) initSupabase();
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        if (!email || !password) {
+          setStatus('Enter an email and password first.', 'warning');
+          return;
+        }
+
+        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+        if (error) throw error;
+
+        setStatus('Account created. Check your email if confirmation is required, then sign in.', 'success');
+        if (data.user && !data.session) {
+          console.log('User created, awaiting email confirmation.');
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus(`Sign-up error: ${err.message}`, 'error');
+      }
     }
-    await logAudit(null, 'generate_plan', null, { inserted: inserts.length });
-    await loadSelectedDate();
-  }catch(e){ alert(e.message); }
-}
-async function updateAssignment(id, patch, actionType){
-  if(isReadOnly()) return alert('This day is finalized and cannot be edited.');
-  const before = currentDay.assignments.find(a=>a.id===id);
-  if(!before) return;
-  const { data, error } = await supabase.from('coverage_assignments').update({ ...patch, updated_by:currentUser.id }).eq('id', id).select('*').single();
-  if(error) return alert(error.message);
-  await logAudit(id, actionType, before, data);
-  await loadSelectedDate();
-}
-async function swapAssignment(id){
-  const row = currentDay.assignments.find(a=>a.id===id);
-  if(!row || row.locked) return alert('Locked assignments cannot be swapped.');
-  const pKey = getPeriodKey(row.period);
-  const fairness = await loadFairnessTotals();
-  const pool = teachers.filter(obj => {
-    if(currentDay.absences.includes(obj.name) || currentDay.exemptions.includes(obj.name) || obj.name===row.sub_assigned) return false;
-    const slot = obj[pKey] || '';
-    if(!(slot.includes('PREP') || slot.includes('POD'))) return false;
-    const used = currentDay.assignments.some(a=>a.period===row.period && a.sub_assigned===obj.name && a.id!==id);
-    return !used;
-  });
-  const chosen = chooseFairestCandidate(pool, fairness, row.absent_department, pKey);
-  if(!chosen) return alert('No alternate candidate found.');
-  await updateAssignment(id, {
-    sub_assigned: chosen.name,
-    substitute_department: chosen.department,
-    coverage_type: chosen.department===row.absent_department ? 'Same Department' : 'Pod/Prep Coverage',
-    escalation_stage: 'Manual swap completed',
-    status: 'Filled'
-  }, 'swap');
-}
-async function toggleLock(id){ const row=currentDay.assignments.find(a=>a.id===id); await updateAssignment(id, { locked: !row.locked }, row.locked ? 'unlock' : 'lock'); }
-async function applyManualAssignment(id){
-  const row = currentDay.assignments.find(a=>a.id===id);
-  if(!row || row.locked) return alert('Locked assignments cannot be changed.');
-  const sub = document.getElementById(`manual-${id}`).value;
-  const note = document.getElementById(`note-${id}`).value;
-  await updateAssignment(id, {
-    sub_assigned: sub,
-    substitute_department: getTeacher(sub)?.department || null,
-    coverage_type: adminCoveragePool.some(x=>x.name===sub) ? 'Admin/Counselor Coverage' : (sub==='NO SUB' ? 'Emergency / Unresolved' : 'Manual Assignment'),
-    escalation_stage: 'Manual assignment by office/admin',
-    status: sub==='NO SUB' ? 'UNFILLED' : 'Filled',
-    office_notes: note
-  }, 'manual_assign');
-}
-async function removeAssignment(id){
-  const before = currentDay.assignments.find(a=>a.id===id);
-  if(!before) return;
-  const { error } = await supabase.from('coverage_assignments').delete().eq('id', id);
-  if(error) return alert(error.message);
-  await logAudit(id, 'remove_assignment', before, null);
-  await loadSelectedDate();
-}
-async function updateOfficeNote(id){
-  if(isReadOnly()) return;
-  const note = document.getElementById(`note-${id}`).value;
-  await supabase.from('coverage_assignments').update({ office_notes: note, updated_by: currentUser.id }).eq('id', id);
-}
-async function finalizeDay(){
-  if(!currentDay.id) return alert('Save or generate the day first.');
-  const payload = { status:'finalized', finalized_at:new Date().toISOString(), finalized_by:currentUser.id, updated_by:currentUser.id, office_memo:document.getElementById('dayMemo').value.trim() };
-  const { error } = await supabase.from('coverage_days').update(payload).eq('id', currentDay.id);
-  if(error) return alert(error.message);
-  await supabase.from('payroll_exports').insert({ coverage_day_id:currentDay.id, export_type:'finalized_snapshot', exported_by:currentUser.id, finalized_snapshot_json:{ day: currentDay, assignments: currentDay.assignments } });
-  await logAudit(null, 'finalize_day', { status: currentDay.status }, payload);
-  await loadSelectedDate();
-}
-async function reopenDay(){
-  if(!currentDay.id) return;
-  const payload = { status:'draft', updated_by:currentUser.id };
-  const { error } = await supabase.from('coverage_days').update(payload).eq('id', currentDay.id);
-  if(error) return alert(error.message);
-  await logAudit(null, 'reopen_day', { status: currentDay.status }, payload);
-  await loadSelectedDate();
-}
-async function logAudit(assignmentId, actionType, beforeJson, afterJson){
-  if(!currentDay.id && actionType !== 'create_day') return;
-  await supabase.from('audit_log').insert({
-    coverage_day_id: currentDay.id,
-    assignment_id: assignmentId,
-    action_type: actionType,
-    before_json: beforeJson,
-    after_json: afterJson,
-    changed_by: currentUser.id
-  });
-}
-function getManualOptions(current){
-  const all = [...teachers, ...adminCoveragePool, { name:'NO SUB', department:'—' }];
-  return all.sort((a,b)=>a.name.localeCompare(b.name)).map(opt => `<option value="${opt.name}" ${opt.name===current?'selected':''}>${opt.name} ${opt.department?`(${opt.department})`:''}</option>`).join('');
-}
-function renderDaily(){
-  const conflicts = currentDay.absences.filter(x=>currentDay.exemptions.includes(x));
-  const rows = [...(currentDay.assignments || [])].sort((a,b)=>periods.indexOf(a.period)-periods.indexOf(b.period) || a.absent_teacher.localeCompare(b.absent_teacher));
-  const unfilled = rows.filter(r=>r.sub_assigned==='NO SUB');
-  let html = `<div class="grid-4" style="margin-top:16px"><div class="metric"><div class="label">Assignments</div><div class="value">${rows.length}</div></div><div class="metric"><div class="label">Unfilled</div><div class="value" style="color:${unfilled.length?'var(--danger)':'var(--success)'}">${unfilled.length}</div></div><div class="metric"><div class="label">Absent Staff</div><div class="value">${currentDay.absences.length}</div></div><div class="metric"><div class="label">Exempt Staff</div><div class="value">${currentDay.exemptions.length}</div></div></div>`;
-  if(conflicts.length) html += `<div class="alert alert-danger" style="margin-top:12px">Conflict detected: ${conflicts.join(', ')}</div>`;
-  if(currentDay.status === 'finalized') html += `<div class="alert alert-success" style="margin-top:12px">This day is finalized and currently read-only.</div>`;
-  if(unfilled.length) html += `<div class="alert alert-danger" style="margin-top:12px">AP/Principal attention required: ${unfilled.length} class(es) remain unresolved.</div>`;
-  if(currentDay.office_memo) html += `<div class="card" style="margin-top:12px"><div class="notice-box"><b>Daily Office Memo</b><br>${escapeHtml(currentDay.office_memo).replace(/\n/g,'<br>')}</div></div>`;
-  html += `<div class="card" style="margin-top:12px"><h3>Daily Coverage Table</h3><table><tr><th>Period</th><th>Absent</th><th>Dept</th><th>Room</th><th>Substitute</th><th>Type</th><th>Status</th><th>Escalation</th><th>Office Notes</th><th class="no-print">Manual</th><th class="no-print">Actions</th></tr>`;
-  rows.forEach(r => {
-    html += `<tr class="${r.sub_assigned==='NO SUB'?'unfilled':''} ${r.locked?'locked-row':''}">
-      <td>${r.period}</td>
-      <td><b>${r.absent_teacher}</b></td>
-      <td>${r.absent_department || ''}</td>
-      <td>${r.room}</td>
-      <td>${r.sub_assigned} ${r.locked?'<span class="pill pill-purple">Locked</span>':''}</td>
-      <td>${r.coverage_type}</td>
-      <td>${r.sub_assigned==='NO SUB'?'<span class="pill pill-danger">UNFILLED</span>':'<span class="pill pill-success">Filled</span>'}</td>
-      <td>${r.escalation_stage}</td>
-      <td><textarea id="note-${r.id}" oninput="updateOfficeNote(${r.id})" ${isReadOnly()?'disabled':''}>${escapeHtml(r.office_notes || '')}</textarea></td>
-      <td class="no-print"><select id="manual-${r.id}" ${isReadOnly()||r.locked?'disabled':''}>${getManualOptions(r.sub_assigned)}</select><button class="btn-light btn-mini" style="margin-top:6px" ${isReadOnly()||r.locked?'disabled':''} onclick="applyManualAssignment(${r.id})">Apply</button></td>
-      <td class="no-print"><div class="toolbar"><button class="btn-light btn-mini" ${isReadOnly()||r.locked?'disabled':''} onclick="swapAssignment(${r.id})">Swap</button><button class="btn-light btn-mini" ${isReadOnly()?'disabled':''} onclick="toggleLock(${r.id})">${r.locked?'Unlock':'Lock'}</button><button class="btn-danger btn-mini" ${isReadOnly()?'disabled':''} onclick="removeAssignment(${r.id})">Remove</button></div></td>
-    </tr>`;
-  });
-  html += `</table></div>`;
-  document.getElementById('dailyReport').innerHTML = html;
-}
-function renderDashboard(){
-  const rows = [...(currentDay.assignments || [])].sort((a,b)=>periods.indexOf(a.period)-periods.indexOf(b.period));
-  const notices = {};
-  rows.filter(r=>r.sub_assigned!=='NO SUB').forEach(r => { if(!notices[r.sub_assigned]) notices[r.sub_assigned]=[]; notices[r.sub_assigned].push(r); });
-  let html = `<div class="grid-3"><div class="card"><h3>Principal Dashboard</h3><table><tr><th>Period</th><th>Absent</th><th>Room</th><th>Assigned</th><th>Status</th></tr>${rows.map(r=>`<tr class="${r.sub_assigned==='NO SUB'?'unfilled':''}"><td>${r.period}</td><td>${r.absent_teacher}</td><td>${r.room}</td><td>${r.sub_assigned}</td><td>${r.sub_assigned==='NO SUB'?'UNFILLED':'Filled'}</td></tr>`).join('')}</table></div><div class="card"><h3>Dean / Office View by Period</h3>${periods.map(p=>{
-      const group=rows.filter(r=>r.period===p); if(!group.length) return ''; return `<div class="period-box"><div class="period-title">${p}</div><table><tr><th>Absent</th><th>Room</th><th>Coverage</th><th>Escalation</th></tr>${group.map(r=>`<tr class="${r.sub_assigned==='NO SUB'?'unfilled':''}"><td>${r.absent_teacher}</td><td>${r.room}</td><td>${r.sub_assigned}</td><td>${r.escalation_stage}</td></tr>`).join('')}</table></div>`;
-    }).join('')}</div><div class="card"><h3>Teacher Notice View</h3>${Object.keys(notices).sort().map(name=>`<div class="notice-box"><b>${name}</b><br>${notices[name].map(r=>`${r.period}: Cover ${r.absent_teacher} in Room ${r.room}`).join('<br>')}</div>`).join('') || '<div class="subtle">No teacher notices.</div>'}</div></div>`;
-  document.getElementById('dashboardTab').innerHTML = html;
-}
-async function renderPayroll(){
-  const { data:assignments } = await supabase.from('coverage_assignments').select('*');
-  const all = assignments || [];
-  const byDate = {}, byPeriod = {}, byType = {}, byTeacher = {}, byPayPeriod = {}, byMonth = {}, unresolved = [];
-  all.forEach(a => {
-    const day = currentDay.id===a.coverage_day_id ? currentDay.coverage_date : null;
-    byPeriod[a.period] = (byPeriod[a.period] || 0) + 1;
-    byType[a.coverage_type] = (byType[a.coverage_type] || 0) + 1;
-    if(a.sub_assigned !== 'NO SUB') byTeacher[a.sub_assigned] = (byTeacher[a.sub_assigned] || 0) + 1; else unresolved.push(a);
-  });
-  const { data:days } = await supabase.from('coverage_days').select('id,coverage_date');
-  const dayMap = Object.fromEntries((days||[]).map(d=>[d.id,d.coverage_date]));
-  all.forEach(a => {
-    const d = dayMap[a.coverage_day_id];
-    if(!d) return;
-    byDate[d] = (byDate[d] || 0) + 1;
-    const pp = getPayPeriodLabel(d); byPayPeriod[pp] = (byPayPeriod[pp] || 0) + (a.sub_assigned !== 'NO SUB' ? 1 : 0);
-    const month = getMonthLabel(d); byMonth[month] = byMonth[month] || {}; if(a.sub_assigned !== 'NO SUB') byMonth[month][a.sub_assigned] = (byMonth[month][a.sub_assigned] || 0) + 1;
-  });
-  teachers.forEach(t=>{ if(!(t.name in byTeacher)) byTeacher[t.name]=0; });
-  const vals = Object.values(byTeacher); const avg = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0; const variance = vals.length ? vals.reduce((s,v)=>s+Math.pow(v-avg,2),0)/vals.length : 0; const sd = Math.sqrt(variance); const high = Object.keys(byTeacher).filter(n => byTeacher[n] > avg + sd); const zero = Object.keys(byTeacher).filter(n => byTeacher[n]===0);
-  const deptLoad = {};
-  Object.keys(byTeacher).forEach(name => { const dept = getTeacher(name)?.department || 'OTHER'; deptLoad[dept] = deptLoad[dept] || { total:0, count:0 }; deptLoad[dept].total += byTeacher[name]; deptLoad[dept].count += 1; });
-  let html = `<div class="grid-4"><div class="metric"><div class="label">Average Coverage Load</div><div class="value">${avg.toFixed(2)}</div></div><div class="metric"><div class="label">NO SUB Incidents</div><div class="value" style="color:${unresolved.length?'var(--danger)':'var(--success)'}">${unresolved.length}</div></div><div class="metric"><div class="label">Zero Coverage Staff</div><div class="value">${zero.length}</div></div><div class="metric"><div class="label">High Load Staff</div><div class="value">${high.length}</div></div></div>`;
-  html += `<div class="grid-2" style="margin-top:14px"><div class="card"><h3>Totals by Date</h3><table><tr><th>Date</th><th>Total</th></tr>${Object.keys(byDate).sort().map(d=>`<tr><td>${d}</td><td>${byDate[d]}</td></tr>`).join('')}</table></div><div class="card"><h3>Totals by Pay Period</h3><table><tr><th>Pay Period</th><th>Filled Coverages</th></tr>${Object.keys(byPayPeriod).sort().map(k=>`<tr><td>${k}</td><td>${byPayPeriod[k]}</td></tr>`).join('')}</table></div></div>`;
-  html += `<div class="grid-3" style="margin-top:14px"><div class="card"><h3>Coverage Count by Period</h3><table><tr><th>Period</th><th>Count</th></tr>${periods.map(p=>`<tr><td>${p}</td><td>${byPeriod[p] || 0}</td></tr>`).join('')}</table></div><div class="card"><h3>Coverage Type Summary</h3><table><tr><th>Type</th><th>Count</th></tr>${Object.keys(byType).sort().map(k=>`<tr><td>${k}</td><td>${byType[k]}</td></tr>`).join('')}</table></div><div class="card"><h3>Payroll Secretary Summary</h3><table><tr><th>Staff</th><th>Total Coverages</th></tr>${Object.keys(byTeacher).sort((a,b)=>byTeacher[b]-byTeacher[a]||a.localeCompare(b)).map(k=>`<tr><td>${k}</td><td>${byTeacher[k]}</td></tr>`).join('')}</table></div></div>`;
-  html += `<div class="grid-2" style="margin-top:14px"><div class="card"><h3>Fairness Exceptions</h3><div class="notice-box"><b>Zero coverages:</b> ${zero.length ? zero.join(', ') : 'None'}</div><div class="notice-box"><b>Unusually high load:</b> ${high.length ? high.map(n=>`${n} (${byTeacher[n]})`).join(', ') : 'None'}</div></div><div class="card"><h3>Department Load Review</h3><table><tr><th>Department</th><th>Total</th><th>Average</th><th>Review</th></tr>${Object.keys(deptLoad).sort().map(d=>`<tr><td>${d}</td><td>${deptLoad[d].total}</td><td>${(deptLoad[d].total/deptLoad[d].count).toFixed(2)}</td><td>${(deptLoad[d].total/deptLoad[d].count) > avg + .5 ? 'Review' : 'Within Range'}</td></tr>`).join('')}</table></div></div>`;
-  html += `<div class="card" style="margin-top:14px"><div class="toolbar"><h3 style="margin:0">Unresolved NO SUB Incidents</h3><button class="btn-light no-print" onclick="exportDayCSV()">Export CSV</button></div><table><tr><th>Date</th><th>Period</th><th>Absent</th><th>Room</th><th>Escalation</th></tr>${unresolved.map(r=>`<tr class="unfilled"><td>${dayMap[r.coverage_day_id] || ''}</td><td>${r.period}</td><td>${r.absent_teacher}</td><td>${r.room}</td><td>${r.escalation_stage}</td></tr>`).join('') || '<tr><td colspan="5">None</td></tr>'}</table></div>`;
-  document.getElementById('payrollTab').innerHTML = html;
-}
-async function renderAudit(){
-  if(!currentDay.id){ document.getElementById('auditTab').innerHTML = '<div class="card"><div class="subtle">No audit log yet for this date.</div></div>'; return; }
-  const { data } = await supabase.from('audit_log').select('*, profiles:changed_by(email, full_name, role)').eq('coverage_day_id', currentDay.id).order('changed_at', { ascending:false });
-  let html = `<div class="card"><h3>Audit Log for ${currentDay.coverage_date}</h3><table><tr><th>When</th><th>User</th><th>Role</th><th>Action</th><th>Assignment ID</th><th>Before</th><th>After</th></tr>`;
-  (data || []).forEach(r => {
-    html += `<tr><td>${new Date(r.changed_at).toLocaleString()}</td><td>${r.profiles?.full_name || r.profiles?.email || ''}</td><td>${r.profiles?.role || ''}</td><td>${r.action_type}</td><td>${r.assignment_id || ''}</td><td><pre style="white-space:pre-wrap;max-width:250px">${escapeHtml(JSON.stringify(r.before_json, null, 2))}</pre></td><td><pre style="white-space:pre-wrap;max-width:250px">${escapeHtml(JSON.stringify(r.after_json, null, 2))}</pre></td></tr>`;
-  });
-  html += `</table></div>`;
-  document.getElementById('auditTab').innerHTML = html;
-}
-function switchTab(tab){ ['daily','dashboard','payroll','audit'].forEach(t => { document.getElementById(t+'Tab').classList.toggle('hidden', t!==tab); document.getElementById('nav-'+t).classList.toggle('active', t===tab); }); }
-async function exportDayCSV(){
-  const rows = currentDay.assignments || [];
-  if(!rows.length) return alert('No assignments to export for this date.');
-  const headers = ['date','pay_period','period','absent_teacher','department','room','sub_assigned','sub_department','coverage_type','status','escalation_stage','office_notes','locked','day_status','generated_by'];
-  const csv = [headers.join(',')].concat(rows.map(r => [
-    currentDay.coverage_date,
-    getPayPeriodLabel(currentDay.coverage_date),
-    r.period,
-    csvSafe(r.absent_teacher),
-    csvSafe(r.absent_department),
-    csvSafe(r.room),
-    csvSafe(r.sub_assigned),
-    csvSafe(r.substitute_department),
-    csvSafe(r.coverage_type),
-    csvSafe(r.status),
-    csvSafe(r.escalation_stage),
-    csvSafe(r.office_notes),
-    r.locked,
-    currentDay.status,
-    currentProfile?.email || ''
-  ].join(','))).join('\n');
-  const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `coverage-${currentDay.coverage_date}.csv`;
-  a.click();
-  await supabase.from('payroll_exports').insert({ coverage_day_id:currentDay.id, export_type:'csv', exported_by:currentUser.id, finalized_snapshot_json:{ date: currentDay.coverage_date, exported_at: new Date().toISOString() } });
-  await logAudit(null, 'export_csv', null, { date: currentDay.coverage_date });
-}
-function csvSafe(v){ return `"${String(v ?? '').replace(/"/g,'""')}"`; }
-loadConfig(); initSupabase();
-</script>
+
+    async function signIn() {
+      try {
+        if (!supabaseClient) initSupabase();
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        if (!email || !password) {
+          setStatus('Enter an email and password first.', 'warning');
+          return;
+        }
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        currentUser = data.user;
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('signOutBtn').classList.remove('hidden');
+        document.getElementById('userPill').textContent = currentUser.email;
+        setStatus(`Signed in as ${currentUser.email}.`, 'success');
+        await refreshMetrics();
+        await loadLatestPlan();
+      } catch (err) {
+        console.error(err);
+        setStatus(`Sign-in error: ${err.message}`, 'error');
+      }
+    }
+
+    async function signOut() {
+      try {
+        if (!supabaseClient) return;
+        await supabaseClient.auth.signOut();
+        currentUser = null;
+        document.getElementById('app').classList.add('hidden');
+        document.getElementById('signOutBtn').classList.add('hidden');
+        document.getElementById('userPill').textContent = 'Not signed in';
+        setStatus('Signed out.', 'warning');
+      } catch (err) {
+        console.error(err);
+        setStatus(`Sign-out error: ${err.message}`, 'error');
+      }
+    }
+
+    function requireAuth() {
+      if (!currentUser) {
+        throw new Error('Please sign in first.');
+      }
+    }
+
+    function parseTeacherPool(raw) {
+      return raw
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => {
+          const [name = '', department = '', periods = '', exempt = 'no'] = line.split(',').map(x => x.trim());
+          return {
+            name,
+            department,
+            available_periods: periods ? periods.split('|').map(x => x.trim()).filter(Boolean) : [],
+            exempt: exempt.toLowerCase() === 'yes'
+          };
+        })
+        .filter(t => t.name);
+    }
+
+    function parseAbsentTeachers(raw) {
+      return raw
+        .split('\n')
+        .map(x => x.trim())
+        .filter(Boolean);
+    }
+
+    function buildDraftAssignments(absentTeachers, teacherPool) {
+      const periods = ['1','2','3','4','5','6','7','8'];
+      const coverageCount = {};
+      teacherPool.forEach(t => coverageCount[t.name] = 0);
+      const assignments = [];
+
+      absentTeachers.forEach(absent => {
+        periods.forEach(period => {
+          const available = teacherPool.filter(t => !t.exempt && t.available_periods.includes(period));
+          available.sort((a, b) => (coverageCount[a.name] || 0) - (coverageCount[b.name] || 0));
+
+          if (available.length > 0) {
+            const assigned = available[0];
+            coverageCount[assigned.name] = (coverageCount[assigned.name] || 0) + 1;
+            assignments.push({
+              absent_teacher: absent,
+              period,
+              assigned_to: assigned.name,
+              assigned_department: assigned.department,
+              coverage_type: 'coverage',
+              note: '',
+              is_locked: false,
+              is_unresolved: false
+            });
+          } else {
+            assignments.push({
+              absent_teacher: absent,
+              period,
+              assigned_to: 'NO SUB',
+              assigned_department: '',
+              coverage_type: 'no_sub',
+              note: 'Escalate: same department → pod/prep → admin/counselor → merge/relocation/emergency plan.',
+              is_locked: false,
+              is_unresolved: true
+            });
+          }
+        });
+      });
+
+      return assignments;
+    }
+
+    async function generatePlan() {
+      try {
+        requireAuth();
+        const planDate = document.getElementById('planDate').value;
+        const generatedBy = document.getElementById('generatedBy').value.trim();
+        const schoolName = document.getElementById('schoolName').value.trim();
+        const officeNotes = document.getElementById('officeNotes').value.trim();
+        const absentTeachers = parseAbsentTeachers(document.getElementById('absentTeachersInput').value);
+        const teacherPool = parseTeacherPool(document.getElementById('teacherPoolInput').value);
+
+        if (!planDate) throw new Error('Choose a coverage date.');
+        if (!generatedBy) throw new Error('Enter who generated the plan.');
+        if (absentTeachers.length === 0) throw new Error('Add at least one absent teacher.');
+        if (teacherPool.length === 0) throw new Error('Add at least one teacher to the coverage pool.');
+
+        const { data: planData, error: planError } = await supabaseClient
+          .from('coverage_plans')
+          .insert({
+            plan_date: planDate,
+            school_name: schoolName || null,
+            generated_by_name: generatedBy,
+            office_notes: officeNotes || null,
+            status: 'draft',
+            created_by: currentUser.id,
+            updated_by: currentUser.id
+          })
+          .select()
+          .single();
+
+        if (planError) throw planError;
+
+        currentPlan = planData;
+        const assignments = buildDraftAssignments(absentTeachers, teacherPool).map(a => ({
+          plan_id: currentPlan.id,
+          ...a,
+          updated_by: currentUser.id
+        }));
+
+        const { data: insertedAssignments, error: assignmentError } = await supabaseClient
+          .from('coverage_assignments')
+          .insert(assignments)
+          .select();
+
+        if (assignmentError) throw assignmentError;
+
+        currentAssignments = insertedAssignments || [];
+        setStatus('Coverage plan generated and saved to Supabase.', 'success');
+        await loadPlan(currentPlan.id);
+        await refreshMetrics();
+      } catch (err) {
+        console.error(err);
+        setStatus(`Generate error: ${err.message}`, 'error');
+      }
+    }
+
+    async function loadLatestPlan() {
+      try {
+        requireAuth();
+        const { data, error } = await supabaseClient
+          .from('coverage_plans')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          renderAll();
+          setStatus('No existing plans found yet.', 'warning');
+          return;
+        }
+
+        await loadPlan(data[0].id);
+        setStatus('Latest plan loaded.', 'success');
+      } catch (err) {
+        console.error(err);
+        setStatus(`Load error: ${err.message}`, 'error');
+      }
+    }
+
+    async function loadPlan(planId) {
+      const { data: plan, error: planError } = await supabaseClient
+        .from('coverage_plans')
+        .select('*')
+        .eq('id', planId)
+        .single();
+      if (planError) throw planError;
+
+      const { data: assignments, error: assignmentError } = await supabaseClient
+        .from('coverage_assignments')
+        .select('*')
+        .eq('plan_id', planId)
+        .order('period', { ascending: true });
+      if (assignmentError) throw assignmentError;
+
+      const { data: audit, error: auditError } = await supabaseClient
+        .from('coverage_audit_log')
+        .select('*')
+        .eq('plan_id', planId)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (auditError) throw auditError;
+
+      currentPlan = plan;
+      currentAssignments = assignments || [];
+      currentAudit = audit || [];
+      renderAll();
+    }
+
+    async function finalizePlan() {
+      try {
+        requireAuth();
+        if (!currentPlan) throw new Error('Load or generate a plan first.');
+
+        const { data, error } = await supabaseClient
+          .from('coverage_plans')
+          .update({
+            status: 'finalized',
+            finalized_at: new Date().toISOString(),
+            finalized_by: currentUser.id,
+            updated_by: currentUser.id
+          })
+          .eq('id', currentPlan.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        currentPlan = data;
+        setStatus('Plan finalized. Assignment edits are now locked by database trigger.', 'success');
+        await loadPlan(currentPlan.id);
+        await refreshMetrics();
+      } catch (err) {
+        console.error(err);
+        setStatus(`Finalize error: ${err.message}`, 'error');
+      }
+    }
+
+    async function addManualAssignment() {
+      try {
+        requireAuth();
+        if (!currentPlan) throw new Error('Load or generate a plan first.');
+        if (currentPlan.status === 'finalized') throw new Error('This plan is finalized and cannot be edited.');
+
+        const absentTeacher = document.getElementById('manualAbsent').value.trim();
+        const period = document.getElementById('manualPeriod').value.trim();
+        const assignedTo = document.getElementById('manualAssigned').value.trim();
+        const coverageType = document.getElementById('manualType').value;
+        const note = document.getElementById('manualNote').value.trim();
+
+        if (!absentTeacher || !period || !assignedTo) {
+          throw new Error('Complete absent teacher, period, and assigned coverage fields.');
+        }
+
+        const { error } = await supabaseClient
+          .from('coverage_assignments')
+          .insert({
+            plan_id: currentPlan.id,
+            absent_teacher: absentTeacher,
+            period,
+            assigned_to: assignedTo,
+            coverage_type: coverageType,
+            note,
+            is_locked: false,
+            is_unresolved: coverageType === 'no_sub',
+            updated_by: currentUser.id
+          });
+
+        if (error) throw error;
+        setStatus('Manual assignment added.', 'success');
+        await loadPlan(currentPlan.id);
+        await refreshMetrics();
+      } catch (err) {
+        console.error(err);
+        setStatus(`Manual assignment error: ${err.message}`, 'error');
+      }
+    }
+
+    async function lockSelectedPlan() {
+      try {
+        requireAuth();
+        if (!currentPlan) throw new Error('No plan loaded.');
+        if (currentPlan.status === 'finalized') {
+          setStatus('Plan is already finalized.', 'warning');
+          return;
+        }
+        setStatus('Draft remains editable until finalized. Use Finalize Plan when records are ready.', 'warning');
+      } catch (err) {
+        console.error(err);
+        setStatus(`Lock info error: ${err.message}`, 'error');
+      }
+    }
+
+    function renderAssignments() {
+      const wrap = document.getElementById('assignmentsWrap');
+      if (!currentAssignments.length) {
+        wrap.innerHTML = '<div class="muted">No assignments yet.</div>';
+        return;
+      }
+
+      const rows = currentAssignments.map(a => `
+        <tr class="${a.coverage_type === 'no_sub' ? 'no-sub' : ''}">
+          <td>${escapeHtml(a.absent_teacher || '')}</td>
+          <td>${escapeHtml(a.period || '')}</td>
+          <td>${escapeHtml(a.assigned_to || '')}</td>
+          <td>${escapeHtml(a.coverage_type || '')}</td>
+          <td>${escapeHtml(a.note || '')}</td>
+          <td>${a.is_unresolved ? 'Yes' : 'No'}</td>
+          <td>${a.is_locked ? 'Yes' : 'No'}</td>
+        </tr>
+      `).join('');
+
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Absent Teacher</th>
+              <th>Period</th>
+              <th>Assigned To</th>
+              <th>Type</th>
+              <th>Note</th>
+              <th>Unresolved</th>
+              <th>Locked</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function renderPayroll() {
+      const wrap = document.getElementById('payrollWrap');
+      if (!currentAssignments.length || !currentPlan) {
+        wrap.innerHTML = '<div class="muted">No payroll summary yet.</div>';
+        return;
+      }
+
+      const byTeacher = {};
+      const byPeriod = {};
+      let noSub = 0;
+
+      currentAssignments.forEach(a => {
+        const teacher = a.assigned_to || 'Unassigned';
+        byTeacher[teacher] = (byTeacher[teacher] || 0) + (teacher === 'NO SUB' ? 0 : 1);
+        byPeriod[a.period] = (byPeriod[a.period] || 0) + 1;
+        if (a.coverage_type === 'no_sub') noSub += 1;
+      });
+
+      const teacherRows = Object.entries(byTeacher)
+        .sort((a, b) => b[1] - a[1])
+        .map(([teacher, total]) => `<tr><td>${escapeHtml(teacher)}</td><td>${total}</td></tr>`)
+        .join('');
+
+      const periodRows = Object.entries(byPeriod)
+        .sort((a, b) => Number(a[0]) - Number(b[0]))
+        .map(([period, total]) => `<tr><td>${escapeHtml(period)}</td><td>${total}</td></tr>`)
+        .join('');
+
+      wrap.innerHTML = `
+        <div class="small" style="margin-bottom:10px;"><strong>Date:</strong> ${escapeHtml(currentPlan.plan_date || '')}</div>
+        <div class="small" style="margin-bottom:10px;"><strong>Status:</strong> ${escapeHtml(currentPlan.status || '')}</div>
+        <div class="small" style="margin-bottom:14px;"><strong>Unresolved NO SUB:</strong> ${noSub}</div>
+        <div class="two-col">
+          <div>
+            <div class="small" style="font-weight:700; margin-bottom:8px;">Totals by teacher</div>
+            <table><thead><tr><th>Teacher</th><th>Total</th></tr></thead><tbody>${teacherRows}</tbody></table>
+          </div>
+          <div>
+            <div class="small" style="font-weight:700; margin-bottom:8px;">Coverage count by period</div>
+            <table><thead><tr><th>Period</th><th>Total</th></tr></thead><tbody>${periodRows}</tbody></table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFairness() {
+      const wrap = document.getElementById('fairnessWrap');
+      if (!currentAssignments.length) {
+        wrap.innerHTML = '<div class="muted">No fairness data yet.</div>';
+        return;
+      }
+
+      const counts = {};
+      currentAssignments.forEach(a => {
+        if (a.assigned_to && a.assigned_to !== 'NO SUB') {
+          counts[a.assigned_to] = (counts[a.assigned_to] || 0) + 1;
+        }
+      });
+
+      const values = Object.values(counts);
+      const avg = values.length ? (values.reduce((s, n) => s + n, 0) / values.length).toFixed(2) : '0.00';
+      const high = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const highList = high.length
+        ? `<ul class="list">${high.map(([name, n]) => `<li>${escapeHtml(name)} — ${n}</li>`).join('')}</ul>`
+        : '<div class="muted">No coverages assigned yet.</div>';
+
+      wrap.innerHTML = `
+        <div class="small" style="margin-bottom:8px;"><strong>Average coverages per teacher:</strong> ${avg}</div>
+        <div class="small" style="margin-bottom:8px;"><strong>Teachers with assigned coverage:</strong> ${values.length}</div>
+        <div class="small" style="font-weight:700; margin:10px 0 6px;">Highest current load</div>
+        ${highList}
+      `;
+    }
+
+    function renderAudit() {
+      const wrap = document.getElementById('auditWrap');
+      if (!currentAudit.length) {
+        wrap.innerHTML = '<div class="muted">No audit entries yet.</div>';
+        return;
+      }
+
+      const rows = currentAudit.map(a => `
+        <tr>
+          <td>${escapeHtml(a.action || '')}</td>
+          <td>${escapeHtml(a.table_name || '')}</td>
+          <td>${escapeHtml(a.created_at || '')}</td>
+        </tr>
+      `).join('');
+
+      wrap.innerHTML = `
+        <table>
+          <thead><tr><th>Action</th><th>Table</th><th>Timestamp</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function renderNoticeView() {
+      const wrap = document.getElementById('noticeWrap');
+      if (!currentAssignments.length) {
+        wrap.innerHTML = '<div class="muted">No teacher notices yet.</div>';
+        return;
+      }
+
+      const assigned = currentAssignments.filter(a => a.assigned_to && a.assigned_to !== 'NO SUB');
+      const grouped = {};
+      assigned.forEach(a => {
+        grouped[a.assigned_to] = grouped[a.assigned_to] || [];
+        grouped[a.assigned_to].push(a);
+      });
+
+      const html = Object.entries(grouped).sort((a,b) => a[0].localeCompare(b[0])).map(([teacher, items]) => `
+        <div style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid #e5e7eb;">
+          <div style="font-weight:800; margin-bottom:6px;">${escapeHtml(teacher)}</div>
+          <ul class="list">
+            ${items.map(i => `<li>Period ${escapeHtml(i.period)} — Cover ${escapeHtml(i.absent_teacher)}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+
+      wrap.innerHTML = html || '<div class="muted">No teacher notices yet.</div>';
+    }
+
+    function renderDashboardAlerts() {
+      const wrap = document.getElementById('dashboardAlerts');
+      if (!currentPlan) {
+        wrap.textContent = 'No plan loaded.';
+        return;
+      }
+
+      const unresolved = currentAssignments.filter(a => a.coverage_type === 'no_sub').length;
+      const finalized = currentPlan.status === 'finalized';
+      wrap.innerHTML = `
+        <div><strong>Plan date:</strong> ${escapeHtml(currentPlan.plan_date || '')}</div>
+        <div><strong>Status:</strong> ${escapeHtml(currentPlan.status || '')}</div>
+        <div><strong>Unfilled classes:</strong> ${unresolved}</div>
+        <div><strong>Generated by:</strong> ${escapeHtml(currentPlan.generated_by_name || '')}</div>
+        <div><strong>Finalized version:</strong> ${finalized ? 'Yes' : 'No'}</div>
+      `;
+    }
+
+    async function refreshMetrics() {
+      try {
+        requireAuth();
+        const [{ count: plansCount }, { count: assignmentsCount }, { count: auditCount }, { count: finalizedCount }] = await Promise.all([
+          supabaseClient.from('coverage_plans').select('*', { count: 'exact', head: true }),
+          supabaseClient.from('coverage_assignments').select('*', { count: 'exact', head: true }),
+          supabaseClient.from('coverage_audit_log').select('*', { count: 'exact', head: true }),
+          supabaseClient.from('coverage_plans').select('*', { count: 'exact', head: true }).eq('status', 'finalized')
+        ]);
+
+        const unresolved = currentAssignments.filter(a => a.coverage_type === 'no_sub').length;
+        document.getElementById('kpiAssignments').textContent = assignmentsCount || 0;
+        document.getElementById('kpiNoSub').textContent = unresolved;
+        document.getElementById('kpiFinalized').textContent = finalizedCount || 0;
+        document.getElementById('kpiAudit').textContent = auditCount || 0;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderAll() {
+      renderAssignments();
+      renderPayroll();
+      renderFairness();
+      renderAudit();
+      renderNoticeView();
+      renderDashboardAlerts();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function downloadCsv(filename, rows) {
+      const csv = rows.map(r => r.map(cell => {
+        const val = cell == null ? '' : String(cell);
+        return '"' + val.replaceAll('"', '""') + '"';
+      }).join(',')).join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function exportAssignmentsCsv() {
+      if (!currentAssignments.length) {
+        setStatus('No assignments to export.', 'warning');
+        return;
+      }
+
+      const rows = [
+        ['Absent Teacher', 'Period', 'Assigned To', 'Coverage Type', 'Note', 'Unresolved', 'Locked']
+      ];
+      currentAssignments.forEach(a => rows.push([
+        a.absent_teacher,
+        a.period,
+        a.assigned_to,
+        a.coverage_type,
+        a.note,
+        a.is_unresolved,
+        a.is_locked
+      ]));
+      downloadCsv('coverage_assignments.csv', rows);
+    }
+
+    function exportAuditCsv() {
+      if (!currentAudit.length) {
+        setStatus('No audit log to export.', 'warning');
+        return;
+      }
+
+      const rows = [['Action', 'Table', 'Timestamp']];
+      currentAudit.forEach(a => rows.push([a.action, a.table_name, a.created_at]));
+      downloadCsv('coverage_audit_log.csv', rows);
+    }
+
+    function printPlan() {
+      window.print();
+    }
+
+    window.addEventListener('load', async () => {
+      fillSavedConfig();
+      const { url, key } = getConfig();
+      if (url && key) {
+        try {
+          initSupabase();
+          setStatus('Saved Supabase config loaded. Sign in to continue.', 'success');
+        } catch (err) {
+          console.error(err);
+          setStatus(`Saved config error: ${err.message}`, 'error');
+        }
+      }
+    });
+  </script>
 </body>
 </html>
