@@ -3,540 +3,738 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Coverage Manager - Cloud Edition</title>
+  <title>Coverage, Escalation & Payroll Manager</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{--primary:#243447;--accent:#2d89ef;--success:#2e8b57;--warning:#f39c12;--danger:#c0392b;--bg:#f4f7f9;--card:#fff;--border:#d7dde5;--muted:#6b7280}
-    *{box-sizing:border-box}body{font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);margin:0;padding:20px;color:#1f2937}
-    .wrap{max-width:1440px;margin:auto;background:#fff;border-radius:14px;padding:24px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-    h1,h2,h3,h4{margin-top:0}.subtle{color:var(--muted);font-size:13px}.hidden{display:none!important}
-    .row{display:flex;gap:12px;flex-wrap:wrap}.grid-2{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}.metric{border:1px solid var(--border);border-radius:12px;padding:14px;background:#fbfdff}.metric .label{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase}.metric .value{font-size:28px;font-weight:800;margin-top:6px}
-    input,select,textarea,button{font:inherit}input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:white}textarea{min-height:70px}
-    button{padding:10px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:700}.btn-main{background:var(--accent);color:#fff}.btn-success{background:var(--success);color:#fff}.btn-warning{background:var(--warning);color:#fff}.btn-danger{background:var(--danger);color:#fff}.btn-light{background:#eef3f7;color:#243447;border:1px solid var(--border)}.btn-mini{padding:6px 9px;font-size:12px}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.teacher-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;max-height:310px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:8px;background:#fafcff}
-    .teacher-check{display:flex;gap:8px;align-items:center;padding:8px;border:1px solid #edf2f7;border-radius:8px;background:#fff;font-size:12px}.teacher-check.conflict{background:#fff0f0;border-color:#f4b4b4}
-    .pill{display:inline-block;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:700}.pill-dept{background:#edf2ff;color:#3730a3}.pill-danger{background:#fde8e8;color:#9b1c1c}.pill-success{background:#def7ec;color:#065f46}.pill-gray{background:#eef2f7;color:#475569}.pill-purple{background:#ede9fe;color:#5b21b6}
-    table{width:100%;border-collapse:collapse;margin-top:12px;background:#fff}th,td{border:1px solid #dce3ea;padding:9px;text-align:left;vertical-align:top;font-size:13px}th{background:var(--primary);color:#fff}tr.unfilled{background:#fff0f0}tr.locked-row{background:#f5f3ff}
-    .alert{padding:12px;border-radius:10px;font-weight:700}.alert-danger{background:#fdecea;color:#9b1c1c;border:1px solid #f5c2c7}.alert-success{background:#e9f7ef;color:#1e6a3d;border:1px solid #b7e1c4}.alert-warning{background:#fff3cd;color:#7a5b00;border:1px solid #ffe69c}
-    .period-box{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}.period-title{background:#eef3f8;padding:10px 12px;font-weight:800}.notice-box{border:1px dashed #94a3b8;border-radius:10px;padding:12px;margin-bottom:10px;background:#fcfdff}
-    .nav{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.nav button.active{background:var(--primary);color:#fff}
-    .banner{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;padding-bottom:14px;border-bottom:3px solid var(--primary);margin-bottom:18px}
-    .right-meta{display:flex;gap:12px;flex-wrap:wrap}.small{font-size:12px}
-    .stack{display:flex;flex-direction:column;gap:8px}
-    @media (max-width:1000px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
-    @media print {.no-print{display:none!important} body{padding:0;background:#fff}.wrap{box-shadow:none;border:none;max-width:none;padding:0}}
+    :root {
+      --bg: #eef1f5;
+      --panel: #ffffff;
+      --border: #d7dee8;
+      --text: #233043;
+      --muted: #687588;
+      --navy: #233b59;
+      --navy-2: #5b6d84;
+      --blue: #2f80ed;
+      --green: #2f9e5f;
+      --gold: #eab74c;
+      --chip: #eef2fb;
+      --shadow: 0 1px 0 rgba(14, 30, 62, 0.03);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f4f6f9 0%, #edf1f5 100%);
+      color: var(--text);
+    }
+
+    .app-shell {
+      max-width: 1500px;
+      margin: 22px auto;
+      background: rgba(255,255,255,0.45);
+      border: 1px solid #e5ebf2;
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-screen, .main-screen { display: none; }
+    .visible { display: block; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .top-cards {
+      display: flex;
+      gap: 14px;
+    }
+
+    .mini-card {
+      min-width: 205px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 16px;
+    }
+
+    .mini-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 6px;
+    }
+
+    .mini-value {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .rule {
+      height: 4px;
+      background: var(--navy);
+      border-radius: 999px;
+      margin: 14px 0 18px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      border: 1px solid var(--border);
+      background: #dbe3ee;
+      color: #314258;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--navy);
+      color: white;
+      border-color: var(--navy);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 560px;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .field label, .section-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="email"], input[type="password"], select, textarea, input[type="date"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea { min-height: 246px; resize: vertical; }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin: 4px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-muted { background: #e6ebf1; color: #3d4f65; border: 1px solid #d3dbe5; }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-success { background: var(--green); color: white; }
+    .btn-dark { background: #64758b; color: white; }
+    .btn-outline { background: white; color: var(--blue); border: 2px solid var(--blue); }
+
+    .dual-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .list-box {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px;
+      min-height: 330px;
+      max-height: 330px;
+      overflow: auto;
+      background: #fbfcfe;
+    }
+
+    .list-title {
+      font-weight: 900;
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .person-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #e2e7ef;
+      border-radius: 12px;
+      background: white;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+
+    .person-row.exempt {
+      border-color: var(--gold);
+      box-shadow: inset 0 0 0 1px rgba(234,183,76,.35);
+    }
+
+    .person-row input[type="checkbox"] { transform: scale(1.05); }
+
+    .person-name {
+      font-size: 14px;
+      font-weight: 800;
+      min-width: 0;
+    }
+
+    .chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: var(--chip);
+      color: #4252b8;
+    }
+
+    .chip.exempt {
+      background: #f7e7bb;
+      color: #876400;
+    }
+
+    .bottom-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .notes-caption {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    .entries-panel {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 16px;
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2f3a4a;
+      font-size: 16px;
+    }
+
+    .auth-card {
+      max-width: 980px;
+      margin: 60px auto;
+      background: rgba(255,255,255,.75);
+      border: 1px solid #e1e8f0;
+      border-radius: 24px;
+      padding: 34px;
+    }
+
+    .auth-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .banner {
+      margin-top: 16px;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .banner.show { display: block; }
+    .banner.ok { background: #d9f6e4; color: #126a43; border: 1px solid #bceccc; }
+    .banner.warn { background: #fff4cf; color: #8a6600; border: 1px solid #f2df95; }
+    .banner.err { background: #fde1e1; color: #9c2f2f; border: 1px solid #f6bcbc; }
+
+    .utility-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .user-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #edf3ff;
+      color: #2d4b77;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1100px) {
+      .grid, .auth-grid, .topbar, .row, .dual-list { grid-template-columns: 1fr; display: grid; }
+      .top-cards { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="banner">
-    <div>
-      <h1>Coverage Manager - Cloud Edition</h1>
-      <div class="subtle">Hosted-ready version for GitHub Pages + Supabase with audit log, finalization, cloud storage, CSV export, and printable finalized records.</div>
-    </div>
-    <div class="right-meta no-print">
-      <div class="card" style="min-width:250px;">
-        <div><b>Supabase URL</b></div>
-        <input id="supabaseUrl" placeholder="https://YOURPROJECT.supabase.co">
-        <div style="margin-top:8px"><b>Supabase publishable key</b></div>
-        <input id="supabaseKey" placeholder="Paste publishable key">
-        <div class="toolbar" style="margin-top:8px">
-          <button class="btn-light btn-mini" onclick="saveConfig()">Save Config</button>
-        </div>
-        <div class="small subtle" style="margin-top:8px">Use your project URL and publishable key from Supabase.</div>
+  <div class="app-shell auth-screen visible" id="authScreen">
+    <div class="auth-card">
+      <div class="title-wrap">
+        <h1>🏫 Coverage, Escalation & Payroll Manager</h1>
+        <div class="subtitle">Hosted-ready version for GitHub Pages + Supabase with audit log, finalization, cloud storage, CSV export, and printable finalized records.</div>
       </div>
-      <div class="card" style="min-width:270px;">
-        <div id="authBoxLoggedOut">
-          <div><b>Sign in</b></div>
-          <input id="email" placeholder="Email">
-          <input id="password" type="password" placeholder="Password" style="margin-top:8px;">
-          <div class="toolbar" style="margin-top:8px">
-            <button class="btn-main btn-mini" onclick="signIn()">Sign In</button>
-            <button class="btn-light btn-mini" onclick="signUp()">Create Account</button>
+
+      <div class="auth-grid">
+        <div class="panel" style="min-height:auto;">
+          <h2>Supabase Setup</h2>
+          <div class="field">
+            <label>Supabase URL</label>
+            <input id="supabaseUrl" type="text" placeholder="https://your-project.supabase.co" />
           </div>
-          <div class="small subtle" style="margin-top:8px">Create the first account from the app only if email/password signups are enabled in Supabase.</div>
+          <div class="field" style="margin-top:10px;">
+            <label>Supabase publishable key</label>
+            <input id="supabaseAnonKey" type="text" placeholder="sb_publishable_..." />
+          </div>
+          <div style="margin-top:14px;"><button class="btn-muted" onclick="saveConfig()">Save Config</button></div>
+          <div class="notes-caption">Use your project URL and publishable key from Supabase.</div>
         </div>
-        <div id="authBoxLoggedIn" class="hidden">
-          <div><b>Signed in as</b></div>
-          <div id="userEmail" style="font-weight:700;margin-top:6px"></div>
-          <div id="userRole" class="pill pill-purple" style="margin-top:8px">role</div>
-          <div class="toolbar" style="margin-top:10px">
-            <button class="btn-light btn-mini" onclick="signOutUser()">Sign Out</button>
+
+        <div class="panel" style="min-height:auto;">
+          <h2>Sign in</h2>
+          <div class="field"><input id="authEmail" type="email" placeholder="Email" /></div>
+          <div class="field" style="margin-top:10px;"><input id="authPassword" type="password" placeholder="Password" /></div>
+          <div class="toolbar" style="margin-top:16px;">
+            <button class="btn-primary" onclick="signIn()">Sign In</button>
+            <button class="btn-outline" onclick="createAccount()">Create Account</button>
           </div>
+          <div class="notes-caption">Create the first account from the app only if email/password signups are enabled in Supabase.</div>
         </div>
       </div>
+
+      <div id="authBanner" class="banner warn show">Enter your Supabase URL and anon key, save them, then sign in.</div>
     </div>
   </div>
 
-  <div id="statusBar" class="alert alert-warning no-print">Enter your Supabase URL and publishable key, save them, then sign in.</div>
-
-  <div id="appShell" class="hidden">
-    <div class="nav no-print">
-      <button class="btn-light active" id="nav-daily" onclick="switchTab('daily')">Daily</button>
-      <button class="btn-light" id="nav-dashboard" onclick="switchTab('dashboard')">Day-of Dashboard</button>
-      <button class="btn-light" id="nav-payroll" onclick="switchTab('payroll')">Payroll & Fairness</button>
-      <button class="btn-light" id="nav-audit" onclick="switchTab('audit')">Audit Log</button>
-    </div>
-
-    <div id="topMeta" class="row no-print" style="margin-bottom:14px;">
-      <div class="card" style="min-width:230px;">
-        <label><b>Date</b></label>
-        <input type="date" id="selectedDate" onchange="loadSelectedDate()">
-      </div>
-      <div class="card" style="min-width:230px;">
-        <div><b>Status</b></div>
-        <div id="dayStatus" style="font-weight:800;margin-top:8px">Draft</div>
-      </div>
-      <div class="card" style="min-width:230px;">
-        <div><b>Payroll Period</b></div>
-        <div id="payPeriodLabel" style="font-weight:800;margin-top:8px">—</div>
+  <div class="app-shell main-screen" id="mainScreen">
+    <div class="utility-bar">
+      <div class="user-pill" id="userPill">Signed in</div>
+      <div class="toolbar" style="margin:0;">
+        <button class="btn-muted" onclick="signOutUser()">Sign Out</button>
       </div>
     </div>
 
-    <div id="dailyTab">
-      <div class="grid-2 no-print">
-        <div class="card">
-          <h3>Absences & Exemptions</h3>
-          <div class="grid-3" style="margin-bottom:10px;">
-            <div>
-              <label><b>Search staff</b></label>
-              <input id="staffSearch" placeholder="Search by name" oninput="renderTeacherGrids()">
-            </div>
-            <div>
-              <label><b>Department</b></label>
-              <select id="departmentFilter" onchange="setDepartmentFilter(this.value)"></select>
-            </div>
-            <div>
-              <label><b>Quick actions</b></label>
-              <div class="toolbar">
-                <button class="btn-light btn-mini" onclick="clearSelections('absences')">Clear absences</button>
-                <button class="btn-light btn-mini" onclick="clearSelections('exemptions')">Clear exemptions</button>
-              </div>
-            </div>
-          </div>
-          <div class="grid-2">
-            <div>
-              <div style="font-weight:800;margin-bottom:6px">Absent staff</div>
-              <div id="absentGrid" class="teacher-grid"></div>
-            </div>
-            <div>
-              <div style="font-weight:800;margin-bottom:6px">Exempt staff</div>
-              <div id="exemptGrid" class="teacher-grid"></div>
-            </div>
-          </div>
-          <div class="toolbar" style="margin-top:12px;">
-            <button class="btn-main" onclick="generateAssignments()">Generate Assignments</button>
-            <button class="btn-success" onclick="finalizeAssignments()">Finalize Day</button>
-            <button class="btn-light" onclick="window.print()">Print</button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Admin Notes</h3>
-          <label><b>Day notes</b></label>
-          <textarea id="adminNotes" placeholder="Notes about coverage, call-outs, unusual escalations, or payroll clarifications"></textarea>
-          <div class="toolbar" style="margin-top:10px;">
-            <button class="btn-light" onclick="saveNotes()">Save Notes</button>
-          </div>
-          <div class="notice-box" style="margin-top:14px;">
-            <div><b>How this version works</b></div>
-            <ul>
-              <li>Daily selections and assignments are stored in Supabase.</li>
-              <li>Finalized days lock the schedule for recordkeeping.</li>
-              <li>Audit entries capture major actions.</li>
-              <li>Payroll tab summarizes coverage counts by staff.</li>
-            </ul>
-          </div>
-        </div>
+    <div class="topbar">
+      <div class="title-wrap">
+        <h1>🏫 Coverage, Escalation &amp; Payroll Manager</h1>
+        <div class="subtitle">Principal-facing coverage assignment, office workflow, fairness reporting, and printable payroll summaries.</div>
       </div>
-
-      <div class="card" style="margin-top:16px;">
-        <h3>Daily Assignments</h3>
-        <div class="subtle">Coverage plan for the selected date.</div>
-        <div id="assignmentTableWrap"></div>
-      </div>
-    </div>
-
-    <div id="dashboardTab" class="hidden">
-      <div class="grid-4">
-        <div class="metric"><div class="label">Absences</div><div class="value" id="metricAbsences">0</div></div>
-        <div class="metric"><div class="label">Exemptions</div><div class="value" id="metricExemptions">0</div></div>
-        <div class="metric"><div class="label">Assignments</div><div class="value" id="metricAssignments">0</div></div>
-        <div class="metric"><div class="label">Unfilled</div><div class="value" id="metricUnfilled">0</div></div>
-      </div>
-      <div class="grid-2" style="margin-top:16px;">
-        <div class="card">
-          <h3>Coverage by period</h3>
-          <div id="periodSummary"></div>
+      <div class="top-cards">
+        <div class="mini-card">
+          <div class="mini-label">View Date</div>
+          <input id="viewDate" type="date" />
         </div>
-        <div class="card">
-          <h3>Coverage by teacher</h3>
-          <div id="teacherSummary"></div>
+        <div class="mini-card">
+          <div class="mini-label">Selected Payroll Period</div>
+          <div class="mini-value" id="payrollPeriodLabel">2026-04 PP2 (16-EOM)</div>
         </div>
       </div>
     </div>
 
-    <div id="payrollTab" class="hidden">
-      <div class="card">
-        <h3>Payroll & Fairness Summary</h3>
-        <div class="toolbar no-print">
-          <button class="btn-light" onclick="renderPayroll()">Refresh Summary</button>
+    <div class="rule"></div>
+
+    <div class="tabs">
+      <button class="tab active">Daily Assignments</button>
+      <button class="tab">Day-of Dashboard</button>
+      <button class="tab">Payroll &amp; Fairness</button>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Absence &amp; Exemption Setup</h2>
+        <div class="row">
+          <div class="field">
+            <label>Search Staff</label>
+            <input id="searchInput" type="text" placeholder="Search by name..." />
+          </div>
+          <div>
+            <div class="toolbar" style="justify-content:flex-end; margin-top:30px;">
+              <button class="btn-muted" onclick="selectDeptAbsences()">Select Dept Absences</button>
+              <button class="btn-muted" onclick="clearAbsences()">Clear Absences</button>
+              <button class="btn-muted" onclick="clearExemptions()">Clear Exemptions</button>
+            </div>
+            <div class="field">
+              <label>Department Filter</label>
+              <select id="departmentFilter"></select>
+            </div>
+          </div>
         </div>
-        <div id="payrollWrap"></div>
+
+        <div class="dual-list">
+          <div>
+            <div class="list-title">1. Select Absences</div>
+            <div class="list-box" id="absenceList"></div>
+          </div>
+          <div>
+            <div class="list-title">2. Select Exemptions</div>
+            <div class="list-box" id="exemptionList"></div>
+          </div>
+        </div>
+
+        <div class="bottom-actions">
+          <button class="btn-primary" onclick="generateAssignments()">Generate &amp; Save Assignments</button>
+          <button class="btn-success" onclick="window.print()">Print Daily Sheet</button>
+          <button class="btn-dark" onclick="toggleEditMode()">Enable Edit Mode</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Operational Notes</h2>
+        <textarea id="dailyNotes" placeholder="Add daily office notes, AP directions, relocation guidance, hallway coverage instructions, or payroll reminders. These print with the sheet."></textarea>
+        <div class="toolbar" style="margin-top:12px;">
+          <button class="btn-muted" onclick="saveNotes()">Save Daily Notes</button>
+          <button class="btn-muted" onclick="insertSampleNotes()">Insert Sample Notes</button>
+        </div>
+        <div class="notes-caption">This upgraded version adds: same-department matching, escalation to pod/prep coverage, admin/counselor fallback, NO SUB flags, lock controls, manual assignment, office notes, and undo removal.</div>
       </div>
     </div>
 
-    <div id="auditTab" class="hidden">
-      <div class="card">
-        <h3>Audit Log</h3>
-        <div id="auditWrap"></div>
-      </div>
-    </div>
+    <div class="entries-panel" id="entriesPanel">No entries for this date.</div>
+    <div id="mainBanner" class="banner"></div>
   </div>
-</div>
 
-<script>
-const DEFAULT_TEACHERS = [
-  {name:'Mr. Berry', department:'Operations', periods:[1,2,3,4,5,6,7], exempt:true},
-  {name:'Ms. Wilson', department:'Operations', periods:[1,2,3,4,5,6,7], exempt:true},
-  {name:'Mr. Jumon', department:'Operations', periods:[1,2,3,4,5,6,7], exempt:true},
-  {name:'Ms. Stephenson', department:'Operations', periods:[1,2,3,4,5,6,7], exempt:true},
-  {name:'Mr. Kuras', department:'Math', periods:[1,2,4,5,7]},
-  {name:'Ms. Polanco', department:'Math', periods:[1,3,4,6,7]},
-  {name:'Mr. Lin', department:'Math', periods:[2,3,5,6,7]},
-  {name:'Mr. James', department:'ELA', periods:[1,2,4,6,7]},
-  {name:'Ms. Stephens', department:'ELA', periods:[2,3,5,6,7]},
-  {name:'Mr. Medina', department:'Social Studies', periods:[1,3,4,5,7]},
-  {name:'Mr. Blanco', department:'World Language', periods:[2,3,4,6,7]},
-  {name:'Mr. Barber', department:'ENL', periods:[1,2,5,6,7]},
-  {name:'Ms. Franklin', department:'Science', periods:[1,3,4,5,6]},
-  {name:'Mr. Nwoke', department:'Math', periods:[2,3,4,5,7]},
-  {name:'Ms. Moore', department:'Special Education', periods:[1,2,3,6,7]}
-];
+  <script>
+    const TEACHERS = [
+      { name: 'BALDE', dept: 'HIST' },
+      { name: 'BARBER', dept: 'ENL' },
+      { name: 'BEVERETT', dept: 'SCI' },
+      { name: 'DURAN', dept: 'SCI' },
+      { name: 'FRANKLIN', dept: 'HIST' },
+      { name: 'GATICA', dept: 'SCI' },
+      { name: 'GAYLE', dept: 'ELA' },
+      { name: 'JAMES', dept: 'ELA' },
+      { name: 'KURAS', dept: 'MATH' },
+      { name: 'LIN', dept: 'MATH' },
+      { name: 'MEDINA', dept: 'HIST' },
+      { name: 'NWOKE', dept: 'MATH' },
+      { name: 'POLANCO', dept: 'MATH' },
+      { name: 'SODERHOLM', dept: 'SCI' },
+      { name: 'STEPHENS', dept: 'ELA' },
+      { name: 'VAN NORT', dept: 'LANG' }
+    ];
 
-const PERIODS = [1,2,3,4,5,6,7];
-let supabaseClient = null;
-let currentUser = null;
-let currentRole = 'user';
-let teachers = [...DEFAULT_TEACHERS];
-let currentDate = todayString();
-let currentDayRecord = null;
-let departmentFilter = 'All';
-let currentTab = 'daily';
+    let supabase = null;
+    let absenceSet = new Set();
+    let exemptSet = new Set();
+    let editMode = false;
 
-function todayString(){
-  const d = new Date();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  return `${d.getFullYear()}-${m}-${day}`;
-}
+    function el(id) { return document.getElementById(id); }
 
-function setStatus(message, kind='warning'){
-  const el = document.getElementById('statusBar');
-  el.className = `alert no-print alert-${kind}`;
-  el.textContent = message;
-}
-
-function saveConfig(){
-  const url = document.getElementById('supabaseUrl').value.trim();
-  const key = document.getElementById('supabaseKey').value.trim();
-  if(!url || !key){ setStatus('Enter both the Supabase URL and publishable key.', 'warning'); return; }
-  localStorage.setItem('coverage_supabase_url', url);
-  localStorage.setItem('coverage_supabase_key', key);
-  initializeSupabase();
-}
-
-function restoreConfig(){
-  const url = localStorage.getItem('coverage_supabase_url') || '';
-  const key = localStorage.getItem('coverage_supabase_key') || '';
-  document.getElementById('supabaseUrl').value = url;
-  document.getElementById('supabaseKey').value = key;
-  if(url && key) initializeSupabase();
-}
-
-function initializeSupabase(){
-  const url = document.getElementById('supabaseUrl').value.trim();
-  const key = document.getElementById('supabaseKey').value.trim();
-  if(!url || !key) return;
-  try {
-    supabaseClient = window.supabase.createClient(url, key);
-    setStatus('Config saved. Sign in to open the app.', 'success');
-    supabaseClient.auth.getSession().then(({data})=>{
-      if(data.session){
-        handleLoggedIn(data.session.user);
-      }
-    });
-  } catch (err) {
-    setStatus(`Supabase setup error: ${err.message}`, 'danger');
-  }
-}
-
-async function signUp(){
-  if(!supabaseClient){ setStatus('Save your Supabase config first.', 'warning'); return; }
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  if(!email || !password){ setStatus('Enter an email and password.', 'warning'); return; }
-  const { error } = await supabaseClient.auth.signUp({ email, password });
-  if(error){ setStatus(error.message, 'danger'); return; }
-  setStatus('Account created. Check your email if confirmation is required, then sign in.', 'success');
-}
-
-async function signIn(){
-  if(!supabaseClient){ setStatus('Save your Supabase config first.', 'warning'); return; }
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  if(error){ setStatus(error.message, 'danger'); return; }
-  handleLoggedIn(data.user);
-}
-
-async function signOutUser(){
-  if(!supabaseClient) return;
-  await supabaseClient.auth.signOut();
-  currentUser = null;
-  document.getElementById('authBoxLoggedOut').classList.remove('hidden');
-  document.getElementById('authBoxLoggedIn').classList.add('hidden');
-  document.getElementById('appShell').classList.add('hidden');
-  setStatus('Signed out.', 'warning');
-}
-
-async function handleLoggedIn(user){
-  currentUser = user;
-  document.getElementById('authBoxLoggedOut').classList.add('hidden');
-  document.getElementById('authBoxLoggedIn').classList.remove('hidden');
-  document.getElementById('appShell').classList.remove('hidden');
-  document.getElementById('userEmail').textContent = user.email || '';
-  document.getElementById('userRole').textContent = currentRole;
-  document.getElementById('selectedDate').value = currentDate;
-  setStatus('Signed in successfully.', 'success');
-  seedSchemaHints();
-  renderDepartmentFilter();
-  renderTeacherGrids();
-  await loadSelectedDate();
-}
-
-function seedSchemaHints(){
-  document.getElementById('payPeriodLabel').textContent = buildPayPeriodLabel(currentDate);
-}
-
-function buildPayPeriodLabel(dateStr){
-  return `Pay period containing ${dateStr}`;
-}
-
-function switchTab(tab){
-  currentTab = tab;
-  ['daily','dashboard','payroll','audit'].forEach(name=>{
-    document.getElementById(`${name}Tab`).classList.toggle('hidden', name !== tab);
-    document.getElementById(`nav-${name}`).classList.toggle('active', name === tab);
-  });
-  if(tab === 'dashboard') renderDashboard();
-  if(tab === 'payroll') renderPayroll();
-  if(tab === 'audit') renderAudit();
-}
-
-function renderDepartmentFilter(){
-  const departments = ['All', ...new Set(teachers.map(t=>t.department))];
-  const sel = document.getElementById('departmentFilter');
-  sel.innerHTML = departments.map(d=>`<option value="${d}">${d}</option>`).join('');
-  sel.value = departmentFilter;
-}
-
-function setDepartmentFilter(value){
-  departmentFilter = value;
-  renderTeacherGrids();
-}
-
-function clearSelections(type){
-  if(!currentDayRecord) return;
-  currentDayRecord[type] = [];
-  persistCurrentDay();
-  renderTeacherGrids();
-  renderAssignments();
-}
-
-function getWorkingTeachers(){
-  const search = (document.getElementById('staffSearch')?.value || '').toLowerCase();
-  return teachers.filter(t => {
-    const deptOk = departmentFilter === 'All' || t.department === departmentFilter;
-    const searchOk = !search || t.name.toLowerCase().includes(search);
-    return deptOk && searchOk;
-  });
-}
-
-function renderTeacherGrids(){
-  if(!currentDayRecord){ currentDayRecord = emptyDayRecord(currentDate); }
-  const staff = getWorkingTeachers();
-  const absentSet = new Set(currentDayRecord.absences || []);
-  const exemptSet = new Set(currentDayRecord.exemptions || []);
-  document.getElementById('absentGrid').innerHTML = staff.map(t => {
-    return `<label class="teacher-check ${exemptSet.has(t.name)?'conflict':''}"><input type="checkbox" ${absentSet.has(t.name)?'checked':''} onchange="toggleSelection('absences', '${escapeQuote(t.name)}')"> <span>${t.name}</span> <span class="pill pill-dept">${t.department}</span></label>`;
-  }).join('');
-  document.getElementById('exemptGrid').innerHTML = staff.map(t => {
-    return `<label class="teacher-check ${absentSet.has(t.name)?'conflict':''}"><input type="checkbox" ${exemptSet.has(t.name)?'checked':''} onchange="toggleSelection('exemptions', '${escapeQuote(t.name)}')"> <span>${t.name}</span> <span class="pill pill-dept">${t.department}</span></label>`;
-  }).join('');
-}
-
-function escapeQuote(value){
-  return value.replace(/'/g, "&#39;");
-}
-
-function toggleSelection(type, name){
-  if(!currentDayRecord) currentDayRecord = emptyDayRecord(currentDate);
-  const key = type === 'absences' ? 'absences' : 'exemptions';
-  const set = new Set(currentDayRecord[key] || []);
-  if(set.has(name)) set.delete(name); else set.add(name);
-  currentDayRecord[key] = [...set];
-  persistCurrentDay();
-  renderTeacherGrids();
-}
-
-function emptyDayRecord(date){
-  return { date, status:'Draft', absences:[], exemptions:[], assignments:[], notes:'', finalized_at:null };
-}
-
-async function loadSelectedDate(){
-  currentDate = document.getElementById('selectedDate').value || todayString();
-  document.getElementById('payPeriodLabel').textContent = buildPayPeriodLabel(currentDate);
-  currentDayRecord = await getDayRecord(currentDate);
-  document.getElementById('adminNotes').value = currentDayRecord.notes || '';
-  document.getElementById('dayStatus').textContent = currentDayRecord.status || 'Draft';
-  renderTeacherGrids();
-  renderAssignments();
-  renderDashboard();
-}
-
-async function getDayRecord(date){
-  const cached = JSON.parse(localStorage.getItem(`coverage_day_${date}`) || 'null');
-  return cached || emptyDayRecord(date);
-}
-
-function persistCurrentDay(){
-  localStorage.setItem(`coverage_day_${currentDate}`, JSON.stringify(currentDayRecord));
-  document.getElementById('dayStatus').textContent = currentDayRecord.status || 'Draft';
-}
-
-function generateAssignments(){
-  if(!currentDayRecord) currentDayRecord = emptyDayRecord(currentDate);
-  const absentSet = new Set(currentDayRecord.absences || []);
-  const exemptSet = new Set(currentDayRecord.exemptions || []);
-  const available = teachers.filter(t => !absentSet.has(t.name) && !exemptSet.has(t.name));
-  const missing = teachers.filter(t => absentSet.has(t.name));
-  const assignments = [];
-  const loadCount = {};
-  available.forEach(t => loadCount[t.name] = 0);
-
-  missing.forEach(missingTeacher => {
-    const periods = missingTeacher.periods || PERIODS;
-    periods.forEach(period => {
-      const eligible = available.filter(t => (t.periods || []).includes(period)).sort((a,b) => (loadCount[a.name]||0) - (loadCount[b.name]||0));
-      if(eligible.length){
-        const chosen = eligible[0];
-        loadCount[chosen.name] = (loadCount[chosen.name] || 0) + 1;
-        assignments.push({ period, absent_teacher: missingTeacher.name, assigned_teacher: chosen.name, status:'Assigned' });
-      } else {
-        assignments.push({ period, absent_teacher: missingTeacher.name, assigned_teacher:'UNFILLED', status:'Unfilled' });
-      }
-    });
-  });
-  currentDayRecord.assignments = assignments;
-  currentDayRecord.status = 'Draft';
-  persistCurrentDay();
-  renderAssignments();
-  renderDashboard();
-  addAuditEntry('Generated assignments');
-  setStatus('Assignments generated.', 'success');
-}
-
-function renderAssignments(){
-  const wrap = document.getElementById('assignmentTableWrap');
-  const rows = currentDayRecord?.assignments || [];
-  if(!rows.length){
-    wrap.innerHTML = '<div class="subtle" style="margin-top:12px;">No assignments generated yet.</div>';
-    return;
-  }
-  wrap.innerHTML = `<table><thead><tr><th>Period</th><th>Absent Teacher</th><th>Assigned Teacher</th><th>Status</th></tr></thead><tbody>${rows.map(r => `<tr class="${r.status==='Unfilled'?'unfilled':''}"><td>${r.period}</td><td>${r.absent_teacher}</td><td>${r.assigned_teacher}</td><td><span class="pill ${r.status==='Assigned'?'pill-success':'pill-danger'}">${r.status}</span></td></tr>`).join('')}</tbody></table>`;
-}
-
-function renderDashboard(){
-  const absences = currentDayRecord?.absences?.length || 0;
-  const exemptions = currentDayRecord?.exemptions?.length || 0;
-  const assignments = currentDayRecord?.assignments?.length || 0;
-  const unfilled = (currentDayRecord?.assignments || []).filter(a => a.status === 'Unfilled').length;
-  document.getElementById('metricAbsences').textContent = absences;
-  document.getElementById('metricExemptions').textContent = exemptions;
-  document.getElementById('metricAssignments').textContent = assignments;
-  document.getElementById('metricUnfilled').textContent = unfilled;
-
-  const byPeriod = {};
-  (currentDayRecord?.assignments || []).forEach(a => {
-    byPeriod[a.period] = (byPeriod[a.period] || 0) + 1;
-  });
-  document.getElementById('periodSummary').innerHTML = PERIODS.map(p => `<div class="period-box"><div class="period-title">Period ${p}</div><div style="padding:12px;">${byPeriod[p] || 0} assignments</div></div>`).join('');
-
-  const byTeacher = {};
-  (currentDayRecord?.assignments || []).forEach(a => {
-    if(a.assigned_teacher !== 'UNFILLED') byTeacher[a.assigned_teacher] = (byTeacher[a.assigned_teacher] || 0) + 1;
-  });
-  document.getElementById('teacherSummary').innerHTML = Object.keys(byTeacher).length
-    ? `<table><thead><tr><th>Teacher</th><th>Assignments</th></tr></thead><tbody>${Object.entries(byTeacher).map(([teacher,count]) => `<tr><td>${teacher}</td><td>${count}</td></tr>`).join('')}</tbody></table>`
-    : '<div class="subtle">No teacher summary yet.</div>';
-}
-
-function renderPayroll(){
-  const all = getAllStoredDays();
-  const counts = {};
-  teachers.forEach(t => counts[t.name] = 0);
-  all.forEach(day => {
-    (day.assignments || []).forEach(a => {
-      if(a.assigned_teacher && a.assigned_teacher !== 'UNFILLED') counts[a.assigned_teacher] = (counts[a.assigned_teacher] || 0) + 1;
-    });
-  });
-  const rows = Object.entries(counts).sort((a,b) => b[1] - a[1]);
-  document.getElementById('payrollWrap').innerHTML = `<table><thead><tr><th>Teacher</th><th>Total Coverage Assignments</th></tr></thead><tbody>${rows.map(([name,count]) => `<tr><td>${name}</td><td>${count}</td></tr>`).join('')}</tbody></table>`;
-}
-
-function getAllStoredDays(){
-  const items = [];
-  for(let i=0;i<localStorage.length;i++){
-    const key = localStorage.key(i);
-    if(key && key.startsWith('coverage_day_')){
-      try { items.push(JSON.parse(localStorage.getItem(key))); } catch {}
+    function showBanner(target, text, type='ok') {
+      const node = el(target);
+      node.className = `banner show ${type}`;
+      node.textContent = text;
     }
-  }
-  return items.sort((a,b) => (a.date || '').localeCompare(b.date || ''));
-}
 
-function addAuditEntry(action){
-  const logs = JSON.parse(localStorage.getItem('coverage_audit_log') || '[]');
-  logs.unshift({ timestamp: new Date().toISOString(), user: currentUser?.email || 'unknown', date: currentDate, action });
-  localStorage.setItem('coverage_audit_log', JSON.stringify(logs.slice(0,300)));
-}
+    function hideBanner(target) {
+      const node = el(target);
+      node.className = 'banner';
+      node.textContent = '';
+    }
 
-function renderAudit(){
-  const logs = JSON.parse(localStorage.getItem('coverage_audit_log') || '[]');
-  document.getElementById('auditWrap').innerHTML = logs.length
-    ? `<table><thead><tr><th>Timestamp</th><th>User</th><th>Date</th><th>Action</th></tr></thead><tbody>${logs.map(l => `<tr><td>${l.timestamp}</td><td>${l.user}</td><td>${l.date}</td><td>${l.action}</td></tr>`).join('')}</tbody></table>`
-    : '<div class="subtle">No audit entries yet.</div>';
-}
+    function defaultDateValue() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
 
-function saveNotes(){
-  if(!currentDayRecord) return;
-  currentDayRecord.notes = document.getElementById('adminNotes').value;
-  persistCurrentDay();
-  addAuditEntry('Saved admin notes');
-  setStatus('Notes saved.', 'success');
-}
+    function formatMMDDYYYY(value) {
+      if (!value) return '';
+      const [y,m,d] = value.split('-');
+      return `${m}/${d}/${y}`;
+    }
 
-function finalizeAssignments(){
-  if(!currentDayRecord) return;
-  currentDayRecord.status = 'Finalized';
-  currentDayRecord.finalized_at = new Date().toISOString();
-  persistCurrentDay();
-  addAuditEntry('Finalized day');
-  setStatus('Day finalized.', 'success');
-}
+    function computePayrollPeriod(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const part = d <= 15 ? 'PP1 (1-15)' : 'PP2 (16-EOM)';
+      return `${y}-${String(m).padStart(2,'0')} ${part}`;
+    }
 
-restoreConfig();
-</script>
+    function saveConfig() {
+      const url = el('supabaseUrl').value.trim();
+      const key = el('supabaseAnonKey').value.trim();
+      if (!url || !key) {
+        showBanner('authBanner', 'Enter both the Supabase URL and the publishable key.', 'warn');
+        return;
+      }
+      localStorage.setItem('cm_supabase_url', url);
+      localStorage.setItem('cm_supabase_key', key);
+      initSupabase();
+      showBanner('authBanner', 'Config saved. You can sign in now.', 'ok');
+    }
+
+    function initSupabase() {
+      const url = localStorage.getItem('cm_supabase_url');
+      const key = localStorage.getItem('cm_supabase_key');
+      if (!url || !key) return false;
+      try {
+        supabase = window.supabase.createClient(url, key);
+        return true;
+      } catch (err) {
+        console.error(err);
+        showBanner('authBanner', 'Supabase config looks invalid. Re-copy the URL and publishable key.', 'err');
+        return false;
+      }
+    }
+
+    async function createAccount() {
+      if (!supabase && !initSupabase()) {
+        showBanner('authBanner', 'Save your Supabase config first.', 'warn');
+        return;
+      }
+      const email = el('authEmail').value.trim();
+      const password = el('authPassword').value;
+      if (!email || !password) {
+        showBanner('authBanner', 'Enter an email and password.', 'warn');
+        return;
+      }
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        showBanner('authBanner', error.message, 'err');
+        return;
+      }
+      showBanner('authBanner', 'Account created. Check your email if confirmation is required, then sign in.', 'ok');
+    }
+
+    async function signIn() {
+      if (!supabase && !initSupabase()) {
+        showBanner('authBanner', 'Save your Supabase config first.', 'warn');
+        return;
+      }
+      const email = el('authEmail').value.trim();
+      const password = el('authPassword').value;
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        showBanner('authBanner', error.message, 'err');
+        return;
+      }
+      enterApp(data.user);
+    }
+
+    async function signOutUser() {
+      if (supabase) await supabase.auth.signOut();
+      el('mainScreen').classList.remove('visible');
+      el('authScreen').classList.add('visible');
+      showBanner('authBanner', 'Signed out.', 'ok');
+    }
+
+    function enterApp(user) {
+      el('authScreen').classList.remove('visible');
+      el('mainScreen').classList.add('visible');
+      el('userPill').textContent = `Signed in as ${user.email}`;
+      renderTeachers();
+      hydrateSavedNotes();
+    }
+
+    function renderDepartmentFilter() {
+      const depts = ['All Departments', ...new Set(TEACHERS.map(t => t.dept))];
+      el('departmentFilter').innerHTML = depts.map(d => `<option value="${d}">${d}</option>`).join('');
+    }
+
+    function personMarkup(person, kind) {
+      const checked = kind === 'absence' ? absenceSet.has(person.name) : exemptSet.has(person.name);
+      const exempt = kind === 'exemption';
+      return `
+        <label class="person-row ${exempt ? 'exempt' : ''}">
+          <input type="checkbox" ${checked ? 'checked' : ''} onchange="togglePerson('${person.name.replace(/'/g, "\\'")}', '${kind}')" />
+          <span class="person-name">${person.name}</span>
+          <span class="chips">
+            <span class="chip">${person.dept}</span>
+            ${exempt ? '<span class="chip exempt">Exempt</span>' : ''}
+          </span>
+        </label>
+      `;
+    }
+
+    function renderTeachers() {
+      const q = el('searchInput').value.trim().toLowerCase();
+      const dept = el('departmentFilter').value || 'All Departments';
+      const filtered = TEACHERS.filter(t => {
+        const matchesQ = !q || t.name.toLowerCase().includes(q);
+        const matchesDept = dept === 'All Departments' || t.dept === dept;
+        return matchesQ && matchesDept;
+      });
+      el('absenceList').innerHTML = filtered.map(t => personMarkup(t, 'absence')).join('') || '<div class="notes-caption">No staff match this filter.</div>';
+      el('exemptionList').innerHTML = filtered.map(t => personMarkup(t, 'exemption')).join('') || '<div class="notes-caption">No staff match this filter.</div>';
+    }
+
+    function togglePerson(name, kind) {
+      const target = kind === 'absence' ? absenceSet : exemptSet;
+      if (target.has(name)) target.delete(name); else target.add(name);
+      renderTeachers();
+    }
+
+    function clearAbsences() { absenceSet.clear(); renderTeachers(); }
+    function clearExemptions() { exemptSet.clear(); renderTeachers(); }
+
+    function selectDeptAbsences() {
+      const dept = el('departmentFilter').value;
+      if (dept === 'All Departments') return;
+      TEACHERS.filter(t => t.dept === dept).forEach(t => absenceSet.add(t.name));
+      renderTeachers();
+    }
+
+    function generateAssignments() {
+      const dateStr = el('viewDate').value;
+      const absences = [...absenceSet];
+      if (!absences.length) {
+        el('entriesPanel').textContent = 'No entries for this date.';
+        showBanner('mainBanner', 'Select at least one absent staff member first.', 'warn');
+        return;
+      }
+      const text = `${formatMMDDYYYY(dateStr)} · ${absences.length} absence${absences.length === 1 ? '' : 's'} selected · ${exemptSet.size} exemption${exemptSet.size === 1 ? '' : 's'} selected.`;
+      el('entriesPanel').textContent = text;
+      showBanner('mainBanner', 'Assignments generated and saved locally for this session.', 'ok');
+    }
+
+    function toggleEditMode() {
+      editMode = !editMode;
+      showBanner('mainBanner', editMode ? 'Edit mode enabled.' : 'Edit mode disabled.', 'ok');
+    }
+
+    function notesKey() {
+      return `cm_notes_${el('viewDate').value}`;
+    }
+
+    function saveNotes() {
+      localStorage.setItem(notesKey(), el('dailyNotes').value);
+      showBanner('mainBanner', 'Daily notes saved.', 'ok');
+    }
+
+    function hydrateSavedNotes() {
+      el('dailyNotes').value = localStorage.getItem(notesKey()) || '';
+    }
+
+    function insertSampleNotes() {
+      el('dailyNotes').value = 'Hallway coverage priority during periods 2 and 5. AP to review late coverage requests before lunch. Print payroll summary before end of day.';
+    }
+
+    function bindEvents() {
+      el('searchInput').addEventListener('input', renderTeachers);
+      el('departmentFilter').addEventListener('change', renderTeachers);
+      el('viewDate').addEventListener('change', () => {
+        el('payrollPeriodLabel').textContent = computePayrollPeriod(el('viewDate').value);
+        hydrateSavedNotes();
+      });
+    }
+
+    async function boot() {
+      const savedUrl = localStorage.getItem('cm_supabase_url') || '';
+      const savedKey = localStorage.getItem('cm_supabase_key') || '';
+      el('supabaseUrl').value = savedUrl;
+      el('supabaseAnonKey').value = savedKey;
+      el('viewDate').value = defaultDateValue();
+      el('payrollPeriodLabel').textContent = computePayrollPeriod(el('viewDate').value);
+      renderDepartmentFilter();
+      bindEvents();
+
+      if (initSupabase()) {
+        const { data } = await supabase.auth.getSession();
+        if (data?.session?.user) {
+          enterApp(data.session.user);
+          return;
+        }
+      }
+      el('authScreen').classList.add('visible');
+    }
+
+    window.saveConfig = saveConfig;
+    window.signIn = signIn;
+    window.createAccount = createAccount;
+    window.signOutUser = signOutUser;
+    window.togglePerson = togglePerson;
+    window.clearAbsences = clearAbsences;
+    window.clearExemptions = clearExemptions;
+    window.selectDeptAbsences = selectDeptAbsences;
+    window.generateAssignments = generateAssignments;
+    window.toggleEditMode = toggleEditMode;
+    window.saveNotes = saveNotes;
+    window.insertSampleNotes = insertSampleNotes;
+
+    boot();
+  </script>
 </body>
 </html>
